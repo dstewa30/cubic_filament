@@ -1,0 +1,110 @@
+include in.variables
+
+variable prun equal 1000000
+variable recordinterval equal 1000
+variable pdump equal 1000
+
+units lj
+dimension 3
+neighbor 1.5 bin
+neigh_modify every 1 delay 0 check yes
+boundary p p p
+
+atom_style molecular
+
+read_data polymer.data
+
+# region membrane cylinder x 175.0 175.0 175.0 0 1000
+region membrane block 0 1000 0 350 0 350
+
+# create_atoms 1 random 1000 12345 membrane
+
+group chain1 type 1
+group link_mem type 2
+
+pair_style zero 8.0 nocoeff
+pair_coeff * *
+pair_coeff 1 1 5.0 2.5 2.8
+
+bond_style harmonic
+bond_coeff 1 1500.0 2.5
+# bond_coeff 1 3000.0 2.5
+
+
+angle_style harmonic
+angle_coeff 1 15000.0 180.0
+# angle_coeff 1 20000.0 180.0
+
+
+timestep 0.0000100000
+
+shell mkdir ./link_pos/ ./e2e_pos/ ./com_pos/ ./dump/
+
+# dump minimization all atom 1 dump/dump.min.${xx}.lammpstrj
+minimize 0.0 1.0e-5 10000 10000
+
+fix 1 all nve/limit 0.01
+
+fix wallchain1 chain1 wall/region membrane lj93 5.0 5.0 5.0
+fix walllinkermem link_mem wall/region membrane lj93 1500.0 2.5 10.0
+
+# variable x1 equal x[21]
+# variable y1 equal y[21]
+# variable z1 equal z[21]
+
+# variable x2 equal x[22]
+# variable y2 equal y[22]
+# variable z2 equal z[22]
+
+# variable x3 equal x[23]
+# variable y3 equal y[23]
+# variable z3 equal z[23]
+
+# variable x4 equal x[24]
+# variable y4 equal y[24]
+# variable z4 equal z[24]
+
+# variable x5 equal x[25]
+# variable y5 equal y[25]
+# variable z5 equal z[25]
+
+# variable e1x equal x[1]
+# variable e1y equal y[1]
+# variable e1z equal z[1]
+
+# variable e2x equal x[81]
+# variable e2y equal y[81]
+# variable e2z equal z[81]
+
+compute comall all com
+
+variable comx equal c_comall[1]
+variable comy equal c_comall[2]
+variable comz equal c_comall[3]
+
+thermo_style custom step time temp etotal
+thermo 10000
+
+run 10000
+
+unfix 1
+# undump minimization
+
+reset_timestep 0
+
+variable tsteps equal time
+
+
+# fix link_pos all print ${recordinterval} "${tsteps} ${x1} ${y1} ${z1} ${x2} ${y2} ${z2} ${x3} ${y3} ${z3} ${x4} ${y4} ${z4} ${x5} ${y5} ${z5} " file link_pos/link_pos.${xx}.txt screen no
+
+# fix e2e_pos all print ${recordinterval} "${tsteps} ${e1x} ${e1y} ${e1z} ${e2x} ${e2y} ${e2z} " file e2e_pos/e2e_pos.${xx}.txt screen no
+
+fix com_pos all print ${recordinterval} "${tsteps} ${comx} ${comy} ${comz}" file com_pos/com_pos.${xx}.txt screen no
+
+dump mydump all atom ${pdump} dump/dump.${xx}.lammpstrj
+
+fix 2 all brownian 310 ${vseed} gamma_t 1.0
+
+thermo 100000
+
+run ${prun}
