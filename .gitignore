@@ -1,0 +1,13 @@
+*
+!.gitignore
+
+!*.py
+!*.sh
+!README.md
+!in_summit.lammps
+
+log.*
+old.*
+test.*
+
+summit_scripts/
