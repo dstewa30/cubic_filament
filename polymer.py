@@ -37,7 +37,7 @@ com_pos_fname_str = 'data/com_pos.txt'
 
 # ---Types---
 atom_types = 2
-bond_types = 1
+bond_types = 3
 angle_types = 1
 
 # ---LAMMPS INPUT FILE PARAMETERS START---
@@ -136,22 +136,24 @@ mass = [
 
 ################## END INPUTS #####################
 
+num_linker_chain = 1
+linker_gap = 3
+link_diff = 2.72717802866
+
 # ---Setup linker numbers---
 n_linkers_membrane = 0
-# for i in range(n_atoms):
-#    if (i % n_skip_mem_linkers == 0):
-#        n_linkers_membrane += 1
-
-n_bonds += n_linkers_membrane
+for i in range(n_atoms):
+   if (i % (linker_gap+1) == 0):
+       n_linkers_membrane += 1
+# n_bonds += n_linkers_membrane
 
 # ---Setup positions---
 positions = []
-linker_positions = []
 
 start=[(xhi - xlo)/2.0, (yhi - ylo)/2.0 + distance_from_axis, (zhi - zlo)/2.0]
 head=[0,-np.cos(theta), -np.sin(theta)]
 
-f1 = filament(n_atoms, bondlength, start, head, n_linkers_membrane)
+f1 = filament(n_atoms, bondlength, start, head, num_linker_chain, linker_gap, link_diff)
 # dump_filament("test.xyz", [f1], True)
 
 num_layers = len(f1.layers)
@@ -160,19 +162,28 @@ thisatom = 1
 monomer_atom = 1
 linker_atom = 2
 
-###NEED TO UPDATE FOR LINKERS
+
 for i in range(num_layers):
-    # print("layer = ", i)
     for j in range(len(f1.layers[i].positions)):
         px = f1.layers[i].positions[j][0]
         py = f1.layers[i].positions[j][1]
         pz = f1.layers[i].positions[j][2]
-        if j < 4:
-            positions.append([chain, monomer_atom, px, py, pz])
-        elif j > 3:
-            linker_positions.append([chain, linker_atom, px, py, pz])
+        positions.append([chain, monomer_atom, px, py, pz])
 
-positions = positions + linker_positions
+for pos in f1.linker_positions:
+    px = pos[0]
+    py = pos[1]
+    pz = pos[2]
+    positions.append([chain, linker_atom, px, py, pz])
+
+# print(positions)
+
+# print(positions)
+
+        # elif j > 3:
+        #     linker_positions.append([chain, linker_atom, px, py, pz])
+
+
         # print("atom = ", j)
     # print(f1.layers[i].positions)
 
@@ -212,6 +223,8 @@ bonds = []
 
 # linear bonds in chain1, bond type = 1
 bond_type = 1
+linker_bond = 2
+filament_linker_bond = 3
 
 # ORIGINAL
 # for i in range(n_atoms - 1):
@@ -220,10 +233,30 @@ bond_type = 1
 #     bond = [bond_type, b_start, b_stop]
 #     bonds.append(bond)
 
-for bondpair in f1.bonds:
-    b_start = bondpair[0]
-    b_stop = bondpair[1]
+### Identifying the bondpairs within the filament ###
+for bondpair in range((8*n_atoms)+4):
+    b_start = f1.bonds[bondpair][0]
+    b_stop = f1.bonds[bondpair][1]
     bond = [bond_type, b_start, b_stop]
+    bonds.append(bond)
+
+tracker = 0
+link_tracker = 0
+for bondpair in range((8*n_atoms)+4, len(f1.bonds)):
+    b_start = f1.bonds[bondpair][0]
+    b_stop = f1.bonds[bondpair][1]
+    if tracker % 4 != 0 or tracker == 0:
+        bond = [filament_linker_bond, b_start, b_stop]
+        tracker += 1
+    elif tracker % 4 == 0 and num_linker_chain != 1:
+        bond = [linker_bond, b_start, b_stop]
+        link_tracker += 1
+        if link_tracker == num_linker_chain - 1:
+            tracker = 0
+            link_tracker = 0
+    elif num_linker_chain == 1:
+        tracker = 0
+    
     bonds.append(bond)
 
 # ---Setup angles---
