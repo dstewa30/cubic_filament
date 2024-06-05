@@ -5,6 +5,7 @@
 !*.sh
 !README.md
 !in_summit.lammps
+!modules/
 
 log.*
 old.*
