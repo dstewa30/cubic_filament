@@ -5,7 +5,7 @@ from modules.layer import layer
 
 n=10
 n_linker_chain = 1
-linker_gap = 1
+linker_gap = 3
 height = 1
 positions = []
 

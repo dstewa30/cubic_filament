@@ -30,7 +30,7 @@ class filament:
     def __generate_filament(self):
         l = layer(self.__monomer_diameter, self.__start_pos, self.__heading)
         self.__layers.append(l)
-        a = self.__monomer_diameter
+        a = (self.__monomer_diameter/2)
         h, f, g = l.get_basis()
         gap_count = 0
 
@@ -94,25 +94,35 @@ class filament:
                 self.__angles.append(triplet5)
 
         ### To calculate bond pairs of linkers ###
+        # this_linker = 1 + (self.__num_monomers+1)*4
+        # for gap_count in range(self.__num_monomers):
+        #     # if self.__linker_gap == 1 and gap_count % 2 != 0:
+        #     #     continue
+        #     if gap_count % (self.__linker_gap+1) == 0:
+        #         linker_count = 1 + 4*(gap_count)
+                
+        #         for i in range (linker_count, linker_count+2):
+        #             bondpair = [i, this_linker]
+        #             bondpair2 = [i+4, this_linker]
+        #             self.__bonds.append(bondpair)
+        #             self.__bonds.append(bondpair2)
+        #         for j in range(self.__num_linker_chain-1):
+        #             bondpair3 = [this_linker,this_linker+1]
+        #             self.__bonds.append(bondpair3)
+        #             this_linker += 1
+        #             # if j == self.__num_linker_chain - 2:
+        #             #     this_linker += 1
+        #         this_linker += 1
+
         this_linker = 1 + (self.__num_monomers+1)*4
         for gap_count in range(self.__num_monomers):
-            # if self.__linker_gap == 1 and gap_count % 2 != 0:
-            #     continue
             if gap_count % (self.__linker_gap+1) == 0:
-                linker_count = 1 + 4*(gap_count)
-                
-                for i in range (linker_count, linker_count+2):
-                    bondpair = [i, this_linker]
-                    bondpair2 = [i+4, this_linker]
+                for i in range(1+(gap_count*4),9+(gap_count*4)):
+                    bondpair = [i,this_linker]
                     self.__bonds.append(bondpair)
-                    self.__bonds.append(bondpair2)
-                for j in range(self.__num_linker_chain-1):
-                    bondpair3 = [this_linker,this_linker+1]
-                    self.__bonds.append(bondpair3)
-                    this_linker += 1
-                    # if j == self.__num_linker_chain - 2:
-                    #     this_linker += 1
-                this_linker += 1
+                this_linker += 1 
+                    
+
             
 
     def __generate_beads(self):

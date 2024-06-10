@@ -1,8 +1,9 @@
 include in.variables
 
-variable prun equal 1000000
+variable prun equal 3000000
 variable recordinterval equal 1000
 variable pdump equal 1000
+variable temperature equal 310
 
 units lj
 dimension 3
@@ -29,15 +30,16 @@ group link_mem type 2
 # pair_style zero 15.0 nocoeff
 pair_style lj/cut 8.0
 # pair_coeff * *
-pair_coeff 1 1 1500.0 2.5 2.80615512077
-pair_coeff 1 2 1500.0 2.5 2.80615512077
-pair_coeff 2 2 1500.0 2.5 2.80615512077
+pair_coeff 1 1 5.0 2.5 2.80615512077
+pair_coeff 1 2 5.0 2.5 2.80615512077
+pair_coeff 2 2 5.0 2.5 2.80615512077
 
 bond_style harmonic
 bond_coeff 1 1500.0 2.5
 # bond_coeff 1 3000.0 2.5
-bond_coeff 2 1500.0 2.5 
-bond_coeff 3 1500.0 3
+# bond_coeff 2 1500.0 2.5 
+bond_coeff 3 1500.0 2.5
+bond_coeff 2 1500.0 5.15388203202
 
 
 angle_style harmonic
@@ -45,14 +47,14 @@ angle_coeff 1 15000.0 180.0
 # angle_coeff 1 20000.0 180.0
 
 
-timestep 0.0000100000
+timestep 0.00001000
 
 shell mkdir ./link_pos/ ./e2e_pos/ ./com_pos/ ./dump/
 
 dump minimization all atom 1 dump/dump.min.${xx}.lammpstrj
 minimize 0.0 1.0e-5 10000 10000
 
-fix 1 all nve/limit 0.01
+fix 1 all nve/limit 1.0e-4
 
 fix wallchain1 chain1 wall/region membrane lj93 5.0 5.0 5.0
 fix walllinkermem link_mem wall/region membrane lj93 1500.0 2.5 10.0
@@ -112,7 +114,7 @@ fix com_pos all print ${recordinterval} "${tsteps} ${comx} ${comy} ${comz}" file
 
 dump mydump all atom ${pdump} dump/dump.${xx}.lammpstrj
 
-fix 2 all brownian 310 ${vseed} gamma_t 1.0
+fix 2 all brownian ${temperature} ${vseed} gamma_t 1.0
 
 thermo 100000
 

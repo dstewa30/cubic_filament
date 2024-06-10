@@ -138,7 +138,8 @@ mass = [
 
 num_linker_chain = 1
 linker_gap = 3
-link_diff = 2.72717802866
+link_diff = np.sqrt(bondlength**2 - (bondlength/2)**2) + 1
+# link_diff = 
 
 # ---Setup linker numbers---
 n_linkers_membrane = 0
@@ -224,7 +225,8 @@ bonds = []
 # linear bonds in chain1, bond type = 1
 bond_type = 1
 linker_bond = 2
-filament_linker_bond = 3
+fila_link_bond1 = 3
+fila_link_bond2 = 2
 
 # ORIGINAL
 # for i in range(n_atoms - 1):
@@ -242,22 +244,32 @@ for bondpair in range((8*n_atoms)+4):
 
 tracker = 0
 link_tracker = 0
+bonds_near = False
 for bondpair in range((8*n_atoms)+4, len(f1.bonds)):
     b_start = f1.bonds[bondpair][0]
     b_stop = f1.bonds[bondpair][1]
-    if tracker % 4 != 0 or tracker == 0:
-        bond = [filament_linker_bond, b_start, b_stop]
-        tracker += 1
-    elif tracker % 4 == 0 and num_linker_chain != 1:
-        bond = [linker_bond, b_start, b_stop]
-        link_tracker += 1
-        if link_tracker == num_linker_chain - 1:
-            tracker = 0
-            link_tracker = 0
-    elif num_linker_chain == 1:
-        tracker = 0
+    if tracker % 2 == 0:
+        bonds_near = not bonds_near
+    if bonds_near:
+        bond = [fila_link_bond1, b_start, b_stop]
+    else:
+        bond = [fila_link_bond2, b_start, b_stop]
+    bonds.append(bond)    
+    tracker += 1
+
+    # if tracker % 4 != 0 or tracker == 0:
+    #     bond = [fila_link_bond1, b_start, b_stop]
+    #     tracker += 1
+    # elif tracker % 4 == 0 and num_linker_chain != 1:
+    #     bond = [linker_bond, b_start, b_stop]
+    #     link_tracker += 1
+    #     if link_tracker == num_linker_chain - 1:
+    #         tracker = 0
+    #         link_tracker = 0
+    # elif num_linker_chain == 1:
+    #     tracker = 0
     
-    bonds.append(bond)
+    # bonds.append(bond)
 
 # ---Setup angles---
 angles = []
