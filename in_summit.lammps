@@ -1,3 +1,5 @@
+### Lammps generates the text files: com_pos,  e2e_pos, link_pos, etc. ###
+
 include in.variables
 
 variable prun equal 3000000
@@ -23,16 +25,16 @@ region membrane block 0 1000 0 350 0 350
 group chain1 type 1
 group link_mem type 2
 
-# pair_style zero 8.0 nocoeff
-# pair_coeff * *
+pair_style zero 8.0 nocoeff
+pair_coeff * *
 # pair_coeff 1 1 5.0 2.5 2.8
 
 # pair_style zero 15.0 nocoeff
-pair_style lj/cut 8.0
+# pair_style lj/cut 8.0
 # pair_coeff * *
-pair_coeff 1 1 5.0 2.5 2.80615512077
-pair_coeff 1 2 5.0 2.5 2.80615512077
-pair_coeff 2 2 5.0 2.5 2.80615512077
+# pair_coeff 1 1 5.0 2.5 2.80615512077
+# pair_coeff 1 2 5.0 2.5 2.80615512077
+# pair_coeff 2 2 5.0 2.5 2.80615512077
 
 bond_style harmonic
 bond_coeff 1 1500.0 2.5

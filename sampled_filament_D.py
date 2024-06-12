@@ -1,3 +1,4 @@
+### OLD VERSION ###
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
@@ -6,7 +7,7 @@ from scipy.optimize import curve_fit
 def f(x, m, c):
     return m * x + c
 
-t, x, y, z = np.loadtxt('data/com_pos.txt', unpack=True)
+t, x, y, z = np.loadtxt('com_pos/com_pos.1.txt', unpack=True)
 
 dx = x - x[0]
 dy = y - y[0]

@@ -1,3 +1,4 @@
+### OLD DONT USE ###
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
@@ -6,7 +7,7 @@ from scipy.optimize import curve_fit
 def f(x, m, c):
     return m * x + c
 
-t, x, y, z = np.loadtxt('data/single_pos.txt', unpack=True)
+t, x, y, z = np.loadtxt('data/D_com_sampled.txt', unpack=True)
 
 ds2 = np.zeros(len(t))
 
@@ -26,7 +27,7 @@ plt.xlabel(r'$t/\tau$', fontsize=18)
 plt.ylabel(r'$\Delta s^2$', fontsize=18)
 plt.savefig('plots/single_displacement.pdf')
 
-t, x, y, z = np.loadtxt('data/single_pos.txt', unpack=True)
+# t, x, y, z = np.loadtxt('data/single_pos.txt', unpack=True)
 
 t_max = len(t)
 sample_window_fraction = 0.02

@@ -7,11 +7,11 @@ def f(x, m, c):
     return m*x + c
 
 
-n_trials = 10
+n_trials = 1050
 
 # Read trial 1 to know what the time array is
 t, ang_dev_rad, ang_dev_deg = np.loadtxt(
-    'runs/run_{}/data/ang_deviation.txt'.format(1), unpack=True)
+    'data/ang_deviation.{}.txt'.format(1), unpack=True)
 
 avg_ang_dev_rad = np.zeros(len(t))
 
@@ -19,7 +19,7 @@ for n in range(1, n_trials+1):
     # Load data
     print('Loading angular deviation data from run_{}'.format(n))
     t, ang_dev_rad, ang_dev_deg = np.loadtxt(
-        'runs/run_{}/data/ang_deviation.txt'.format(n), unpack=True)
+        'data/ang_deviation.{}.txt'.format(n), unpack=True)
 
     for t_iter in range(len(t)):
         avg_ang_dev_rad[t_iter] += (ang_dev_rad[t_iter])**2
@@ -44,9 +44,9 @@ plt.xlabel(r'$t/\tau$', fontsize=18)
 plt.ylabel(r'$\langle \theta^2 \rangle$', fontsize=18)
 plt.legend()
 
-plt.savefig('runs_measurements/avg_ang_dev_sq.pdf')
+plt.savefig('plots/avg_ang_dev_sq.pdf')
 
-with open('runs_measurements/D_rot_measurements.txt', 'w') as f:
+with open('data/D_rot_measurements.txt', 'w') as f:
     f.write("# Slope \t D_rot(measured, unscaled)\n")
     f.write("{:.4e} \t {:.4e}\n".format(fit_params[0], fit_params[0]/(2)))
 
@@ -55,12 +55,11 @@ mean_e2e = 0
 
 for n in range(1, n_trials+1):
     # Load data
-    print('Loading e2e data from run_{}'.format(n))
+    # print('Loading e2e data from run_{}'.format(n))
     t, e2e = np.loadtxt(
-        'runs/run_{}/data/e2e_dist.txt'.format(n), unpack=True)
+        'e2e_pos/e2e_dist.{}.txt'.format(n), unpack=True)
 
-    for t_iter in range(len(t)):
-        avg_e2e[t_iter] += (e2e[t_iter])
+    avg_e2e += e2e
     
     mean_e2e += np.mean(e2e)
 
@@ -79,5 +78,5 @@ plt.ylabel(r'Averaged end to end distance', fontsize=18)
 
 plt.legend()
 
-plt.savefig('runs_measurements/avg_e2e_dist.pdf')
+plt.savefig('plots/avg_e2e_dist.pdf')
 

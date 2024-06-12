@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 info = np.loadtxt('info.txt')
-num_simulations = 1
+num_simulations = 1050
 
 num_monomers = int(info[0])
 # num_linkers = int(info[1])
@@ -27,7 +27,7 @@ for num_sim in range(1, 1+num_simulations):
 
     # t, ang_deviation_list_rad, ang_deviation_list_deg = np.loadtxt('data/ang_deviation.txt', unpack=True)
 
-    plt.figure(tight_layout=True)
+    # plt.figure(tight_layout=True)
 
     # plt.plot(t, ang_deviation_list_deg, 'k-', linewidth=0.5, label=r'$\Delta\theta$')
     # plt.xlabel(r'$t/\tau$', fontsize=18)
@@ -42,26 +42,26 @@ for num_sim in range(1, 1+num_simulations):
             f.write('{}\t{:.4f}\n'.format(t[i], np.linalg.norm(hv)))
 
     t, e2e_dist_list = np.loadtxt('e2e_pos/e2e_dist.{}.txt'.format(num_sim), unpack=True)
-    print("End to end distance: ")
-    print("Mean: {:.4f}".format(np.mean(e2e_dist_list)))
-    print("Std: {:.4f}".format(np.std(e2e_dist_list)))
+    # print("End to end distance: ")
+    # print("Mean: {:.4f}".format(np.mean(e2e_dist_list)))
+    # print("Std: {:.4f}".format(np.std(e2e_dist_list)))
 
     e2e_mean_line = np.mean(e2e_dist_list) * np.ones(len(t))
 
-    plt.clf()
-    plt.cla()
+    # plt.clf()
+    # plt.cla()
 
-    plt.figure(tight_layout=True)
+    # plt.figure(tight_layout=True)
 
-    plt.plot(t, e2e_dist_list, 'k-', linewidth=0.2, label='End to end distance')
-    # plt.scatter(t, e2e_dist_list, s=5, label='End to end distance', color='k', marker='.', alpha=0.7, edgecolors='none')
+    # plt.plot(t, e2e_dist_list, 'k-', linewidth=0.2, label='End to end distance')
+    # # plt.scatter(t, e2e_dist_list, s=5, label='End to end distance', color='k', marker='.', alpha=0.7, edgecolors='none')
 
-    plt.plot(t, e2e_mean_line, 'r--', linewidth=2, label='Mean distance', alpha=0.7)
-    plt.xlabel(r'$t/\tau$', fontsize=18)
-    plt.ylabel("End to end distance", fontsize=18)
-    plt.xlim(0, max(t))
-    plt.legend(loc='best', markerscale=2)
+    # plt.plot(t, e2e_mean_line, 'r--', linewidth=2, label='Mean distance', alpha=0.7)
+    # plt.xlabel(r'$t/\tau$', fontsize=18)
+    # plt.ylabel("End to end distance", fontsize=18)
+    # plt.xlim(0, max(t))
+    # plt.legend(loc='best', markerscale=2)
 
-    plt.savefig('e2e_dist.{}.pdf'.format(num_sim))
+    # plt.savefig('e2e_dist.{}.pdf'.format(num_sim))
 
         

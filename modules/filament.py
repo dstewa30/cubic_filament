@@ -30,24 +30,35 @@ class filament:
     def __generate_filament(self):
         l = layer(self.__monomer_diameter, self.__start_pos, self.__heading)
         self.__layers.append(l)
-        a = (self.__monomer_diameter/2)
+        a = (self.__monomer_diameter)
         h, f, g = l.get_basis()
         gap_count = 0
+
+        ### To get the positions of the linkers ###
+        n_linkers_membrane = 0
+        for i in range(self.__num_monomers):
+            if (i % (self.__linker_gap+1) == 0):
+                n_linkers_membrane += 1
+
+        self.linker_positions.append(l.positions[0] + (a*f)/2 + (self.__num_monomers*a-(a/2))*h - (self.__link_diff*g))
+        placeholder = self.linker_positions[0]
+        for i in range(1,n_linkers_membrane):
+            self.linker_positions.append(placeholder - (a*i*(self.__linker_gap+1))*h)
 
         for k in range(1, self.__num_monomers + 2):
             
             ### To get the positions of the linkers ###
-            p = []
-            if gap_count % (self.__linker_gap+1) == 0 and gap_count != self.__num_monomers:
-                p.append(l.positions[0] + (a*f)/2 + (a*h)/2 - (self.__link_diff*g))
-                for bead in range(self.__num_linker_chain-1):
-                    placeholder = p[-1]
-                    p.append(placeholder-(self.__link_diff*g))
+            # p = []
+            # if gap_count % (self.__linker_gap+2) == 0 and gap_count != self.__num_monomers:
+            #     p.append(l.positions[0] + (a*f)/2 + (a*h)/2 - (self.__link_diff*g))
+            #     # for bead in range(self.__num_linker_chain-1):
+            #     #     placeholder = p[-1]
+            #     #     p.append(placeholder-(self.__link_diff*g))
 
-                for linker_pos in p:
-                    self.linker_positions.append(linker_pos)
+            #     for linker_pos in p:
+            #         self.linker_positions.append(linker_pos)
 
-            gap_count += 1
+            # gap_count += 1
 
             ### To get bond pairs in the plane of each layer ###
             for j in range((k*4)-3,(k*4)+1):
@@ -117,7 +128,7 @@ class filament:
         this_linker = 1 + (self.__num_monomers+1)*4
         for gap_count in range(self.__num_monomers):
             if gap_count % (self.__linker_gap+1) == 0:
-                for i in range(1+(gap_count*4),9+(gap_count*4)):
+                for i in range(1+(4*(self.__num_monomers-1))-(gap_count*4),9+(4*(self.__num_monomers-1))-(gap_count*4)):
                     bondpair = [i,this_linker]
                     self.__bonds.append(bondpair)
                 this_linker += 1 

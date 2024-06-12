@@ -6,6 +6,7 @@ from scipy.optimize import curve_fit
 def f(x, m, c):
     return m * x + c
 
+
 t, ang_dev_rad, ang_dev_deg = np.loadtxt(
     'data/ang_deviation.txt', unpack=True)
 

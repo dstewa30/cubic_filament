@@ -104,8 +104,7 @@ print("theta in radians =", theta)
 # Chain info (only count polymer chain)
 n_chains = 1
 chain_offset = 10
-distance_from_axis = 0
-# distance_from_axis = 172
+distance_from_axis = 173
 
 # Per chain numbers
 n_atoms = 20
