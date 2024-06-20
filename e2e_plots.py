@@ -17,7 +17,7 @@ for num_sim in range(1, 1+num_simulations):
 
     for i in range(len(t)):
         hv = np.array([e1x[i] - e2x[i], e1y[i] - e2y[i], e1z[i] - e2z[i]])
-        angle = np.arccos(np.dot(hv0, hv) / (np.linalg.norm(hv0) * np.linalg.norm(hv)))
+        angle = np.arccos(np.dot(hv0, hv) / ((np.linalg.norm(hv0) * np.linalg.norm(hv))))
         ang_deviation_list[i] = angle
 
     with open('data/ang_deviation.{}.txt'.format(num_sim), 'w') as f:

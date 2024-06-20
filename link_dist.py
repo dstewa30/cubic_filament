@@ -17,13 +17,14 @@ zhi = 350
 
 b = block(xlo, xhi, ylo, yhi, zlo, zhi)
 
-runmax = 1
+runmax = 1008
+plt.figure(tight_layout=True)
 
 for run_i_m1 in range(0, runmax):
 
     run_i = run_i_m1 + 1
-    print("="*50)
-    print("Processing run {}".format(run_i))
+    # print("="*50)
+    # print("Processing run {}".format(run_i))
 
     data = np.loadtxt("link_pos/link_pos.{}.txt".format(run_i), unpack=True)
 
@@ -46,16 +47,16 @@ for run_i_m1 in range(0, runmax):
     toggle_plot_num_attached = 1
 
     window = 11
-    print("Smoothing window = {}".format(window))
+    # print("Smoothing window = {}".format(window))
 
     detection_window = 21
-    print("Detection window = {}".format(detection_window))
+    # print("Detection window = {}".format(detection_window))
 
     threshold = 0.25
-    print("Threshold = {:.2f}".format(threshold))
+    # print("Threshold = {:.2f}".format(threshold))
 
     hitting_distance = 2.5
-    print("Hitting distance = {:.2f}".format(hitting_distance))
+    # print("Hitting distance = {:.2f}".format(hitting_distance))
 
     info = np.loadtxt('info.txt')
 
@@ -63,13 +64,14 @@ for run_i_m1 in range(0, runmax):
     num_linkers = int(info[1])
     num_skip = int(info[2])
 
-    print("Number of linkers = {}".format(num_linkers))
+    # print("Number of linkers = {}".format(num_linkers))
 
     t = data[0]
 
     avg_dist = np.zeros((len(t),))
 
-    plt.figure(tight_layout=True)
+    plt.clf()
+    plt.cla()
 
     smooth_all_linkers_dist = np.zeros((num_linkers, len(t)))
     hit_detection_all_linkers = np.zeros((num_linkers, len(t)))
@@ -97,8 +99,8 @@ for run_i_m1 in range(0, runmax):
         for d in range(len(dist_list)):
             full_dist_list[d][i-1] = dist_list_s[d]
 
-        if (toggle_plot_traces == 1):
-            plt.plot(t, dist_list_s, label="Linker {}".format(i), linewidth=0.5)
+        # if (toggle_plot_traces == 1):
+            # plt.plot(t, dist_list_s, label="Linker {}".format(i), linewidth=0.5)
         avg_dist += dist_list
 
         for t_step in range(len(t)):
@@ -189,42 +191,42 @@ for run_i_m1 in range(0, runmax):
             else:
                 comparison_one = "="
 
-    if (comparison_one == ">" or one_linker_first_attached == 0):
-        print("One linker never attached")
-    else:
-        print("One linker first attached at t = {}".format(
-            one_linker_first_attached_at_t))
+    # if (comparison_one == ">" or one_linker_first_attached == 0):
+    #     print("One linker never attached")
+    # else:
+    #     print("One linker first attached at t = {}".format(
+    #         one_linker_first_attached_at_t))
 
-    if (comparison_two == ">" or two_linkers_first_attached == 0):
-        print("Two linkers never attached")
-    else:
-        print("Two linkers first attached at t = {}".format(
-            two_linkers_first_attached_at_t))
+    # if (comparison_two == ">" or two_linkers_first_attached == 0):
+    #     print("Two linkers never attached")
+    # else:
+    #     print("Two linkers first attached at t = {}".format(
+    #         two_linkers_first_attached_at_t))
     with open(two_first_attached_time_str, 'w') as f:
         f.write(
             "# First line: one linker first attached at t, second line: two linkers first attached at t\n")
         f.write('{}\n{}'.format(one_linker_first_attached_at_t,
                 two_linkers_first_attached_at_t))
 
-    print("-"*20)
+    # print("-"*20)
 
-    print("t = {}\nattached monomers = {}\ndegree of attachment = {:.4f}".format(
-        max(t), monomers_currently_attached, degree_of_attachment[t_step]))
+    # print("t = {}\nattached monomers = {}\ndegree of attachment = {:.4f}".format(
+    #     max(t), monomers_currently_attached, degree_of_attachment[t_step]))
 
-    print("Number of linkers attached = {}".format(
-        len(monomers_currently_attached)))
+    # print("Number of linkers attached = {}".format(
+    #     len(monomers_currently_attached)))
 
     if (detached_at_t == max(t)):
         comparison = ">"
     else:
         comparison = "="
 
-    print("First attached at t = {}".format(attached_at_t, comparison))
+    # print("First attached at t = {}".format(attached_at_t, comparison))
 
-    if (comparison == "="):
-        print("Last detached at t = {}".format(detached_at_t))
-    else:
-        print("Filament never detached")
+    # if (comparison == "="):
+    #     print("Last detached at t = {}".format(detached_at_t))
+    # else:
+    #     print("Filament never detached")
 
     with open(degree_str, 'w') as f:
         for i in range(len(degree_of_attachment)):
@@ -262,22 +264,22 @@ for run_i_m1 in range(0, runmax):
 
     # ---Hit Detection plot---
 
-    plt.clf()
+    # plt.clf()
 
     offset_scale = 0.2 / num_linkers
     offset = offset_scale * np.ones(len(t))
 
-    plt.xlabel(r'$t/\tau$', fontsize=18)
-    plt.ylabel("Hit detection", fontsize=18)
-    plt.ylim(bottom=-0.1, top=offset_scale * num_linkers + 2)
-    plt.tight_layout()
+    # plt.xlabel(r'$t/\tau$', fontsize=18)
+    # plt.ylabel("Hit detection", fontsize=18)
+    # plt.ylim(bottom=-0.1, top=offset_scale * num_linkers + 2)
+    # plt.tight_layout()
 
     for i in range(1, num_linkers+1):
         hit_detection_all_linkers[i -
                                   1] = hit_detection_all_linkers[i-1] + (i-1) * offset
-        if (toggle_plot_hit_detection == 1):
-            plt.scatter(t, hit_detection_all_linkers[i-1],
-                        label="Linker {}".format(i), marker=".", s=0.25)
+        # if (toggle_plot_hit_detection == 1):
+        #     plt.scatter(t, hit_detection_all_linkers[i-1],
+        #                 label="Linker {}".format(i), marker=".", s=0.25)
 
     hit_detection_avg = []
     smooth_detection = cm.moving_average(
@@ -290,53 +292,53 @@ for run_i_m1 in range(0, runmax):
             hit_detection_avg.append(0)
 
     hit_detection_avg = hit_detection_avg + ((num_linkers)) * offset
-    if (toggle_plot_hit_detection == 1):
-        plt.scatter(t, hit_detection_avg, label="Average",
-                    marker=".", color="black", s=0.3)
+    # if (toggle_plot_hit_detection == 1):
+    #     plt.scatter(t, hit_detection_avg, label="Average",
+    #                 marker=".", color="black", s=0.3)
 
-    if (toggle_plot_hit_detection == 1):
-        plt.legend(loc="best", markerscale=10)
-        plt.savefig("hit_detection.{}.pdf".format(run_i), bbox_inches='tight')
+    # if (toggle_plot_hit_detection == 1):
+    #     plt.legend(loc="best", markerscale=10)
+    #     plt.savefig("hit_detection.{}.pdf".format(run_i), bbox_inches='tight')
 
     # --- Degree of attachment plot ---
 
-    if (toggle_plot_degree == 1):
-        plt.clf()
-        plt.cla()
-        plt.xlabel(r'$t/\tau$', fontsize=18)
-        plt.ylabel("Degree of attachment", fontsize=18)
-        plt.ylim(bottom=-0.1, top=1.1)
-        plt.tight_layout()
-        plt.plot(t, degree_of_attachment, 'k', linewidth=0.6)
-        # plt.grid(axis='y', linestyle='--', linewidth=0.5, which='both')
-        # plt.plot(t, attachment_line, 'r--', linewidth=0.5)
-        plt.savefig("degree_of_attachment.{}.pdf".format(run_i), bbox_inches='tight')
-        # plt.show()
+    # if (toggle_plot_degree == 1):
+    #     plt.clf()
+    #     plt.cla()
+    #     plt.xlabel(r'$t/\tau$', fontsize=18)
+    #     plt.ylabel("Degree of attachment", fontsize=18)
+    #     plt.ylim(bottom=-0.1, top=1.1)
+    #     plt.tight_layout()
+    #     plt.plot(t, degree_of_attachment, 'k', linewidth=0.6)
+    #     # plt.grid(axis='y', linestyle='--', linewidth=0.5, which='both')
+    #     # plt.plot(t, attachment_line, 'r--', linewidth=0.5)
+    #     plt.savefig("degree_of_attachment.{}.pdf".format(run_i), bbox_inches='tight')
+    #     # plt.show()
 
     # --- Two linkers attached plot ---
 
-    if (toggle_plot_two_attached == 1):
-        plt.clf()
-        plt.cla()
-        plt.xlabel(r'$t/\tau$', fontsize=18)
-        plt.ylabel("Two monomers attached", fontsize=18)
-        plt.ylim(bottom=-0.1, top=1.1)
-        plt.tight_layout()
-        plt.plot(t, two_attached, 'k', linewidth=0.6)
-        plt.grid(axis='y', linestyle='--', linewidth=0.5, which='major')
-        plt.savefig("two_attached.{}.pdf".format(run_i), bbox_inches='tight')
+    # if (toggle_plot_two_attached == 1):
+    #     plt.clf()
+    #     plt.cla()
+    #     plt.xlabel(r'$t/\tau$', fontsize=18)
+    #     plt.ylabel("Two monomers attached", fontsize=18)
+    #     plt.ylim(bottom=-0.1, top=1.1)
+    #     plt.tight_layout()
+    #     plt.plot(t, two_attached, 'k', linewidth=0.6)
+    #     plt.grid(axis='y', linestyle='--', linewidth=0.5, which='major')
+    #     plt.savefig("two_attached.{}.pdf".format(run_i), bbox_inches='tight')
 
     # --- Number of linkers attached plot ---
 
     line_at_two = 2 * np.ones(len(t))
-    if (toggle_plot_num_attached == 1):
-        plt.clf()
-        plt.cla()
-        plt.xlabel(r'$t/\tau$', fontsize=18)
-        plt.ylabel("Number of linkers attached", fontsize=18)
-        plt.ylim(bottom=-0.1, top=num_linkers + 1)
-        plt.tight_layout()
-        plt.grid(axis='y', linestyle='--', linewidth=0.5)
-        plt.plot(t, line_at_two, 'r--', linewidth=0.7)
-        plt.plot(t, num_linkers_attached, 'k', linewidth=0.6)
-        plt.savefig("num_attached.{}.pdf".format(run_i), bbox_inches='tight')
+    # if (toggle_plot_num_attached == 1):
+    #     plt.clf()
+    #     plt.cla()
+    #     plt.xlabel(r'$t/\tau$', fontsize=18)
+    #     plt.ylabel("Number of linkers attached", fontsize=18)
+    #     plt.ylim(bottom=-0.1, top=num_linkers + 1)
+    #     plt.tight_layout()
+    #     plt.grid(axis='y', linestyle='--', linewidth=0.5)
+    #     plt.plot(t, line_at_two, 'r--', linewidth=0.7)
+    #     plt.plot(t, num_linkers_attached, 'k', linewidth=0.6)
+    #     plt.savefig("num_attached.{}.pdf".format(run_i), bbox_inches='tight')

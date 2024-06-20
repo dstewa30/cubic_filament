@@ -20,21 +20,21 @@ thisatom = 1
 monomer_atom = 1
 linker_atom = 2
 
-# for i in range(num_layers):
-#     for j in range(len(f1.layers[i].positions)):
-#         px = f1.layers[i].positions[j][0]
-#         py = f1.layers[i].positions[j][1]
-#         pz = f1.layers[i].positions[j][2]
-#         positions.append([chain, monomer_atom, px, py, pz])
+for i in range(num_layers):
+    for j in range(len(f1.layers[i].positions)):
+        px = f1.layers[i].positions[j][0]
+        py = f1.layers[i].positions[j][1]
+        pz = f1.layers[i].positions[j][2]
+        positions.append([px, py, pz])
 
-# for pos in f1.linker_positions:
-#     px = pos[0]
-#     py = pos[1]
-#     pz = pos[2]
-#     positions.append([chain, linker_atom, px, py, pz])
+for pos in f1.linker_positions:
+    px = pos[0]
+    py = pos[1]
+    pz = pos[2]
+    positions.append([px, py, pz])
 
 # print(positions)
-print(f1.bonds)
+print(positions)
 
 # print(f1.angles)
 # dump_filament("test.xyz", [f1], True)

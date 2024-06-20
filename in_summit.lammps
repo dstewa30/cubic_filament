@@ -51,7 +51,7 @@ angle_coeff 1 15000.0 180.0
 
 timestep 0.00001000
 
-shell mkdir ./link_pos/ ./e2e_pos/ ./com_pos/ ./dump/
+shell mkdir ./link_pos/ ./e2e_pos/ ./face_vec_pos/ ./axial_ortho_pos/ ./p4_pos/ ./com_pos/ ./dump/
 
 dump minimization all atom 1 dump/dump.min.${xx}.lammpstrj
 minimize 0.0 1.0e-5 10000 10000
@@ -89,6 +89,23 @@ variable e2x equal x[81]
 variable e2y equal y[81]
 variable e2z equal z[81]
 
+variable fv1x equal x[1]
+variable fv1y equal y[1]
+variable fv1z equal z[1]
+
+variable fv2x equal x[2]
+variable fv2y equal y[2]
+variable fv2z equal z[2]
+
+variable axor5x equal x[5]
+variable axor5y equal y[5]
+variable axor5z equal z[5]
+
+variable p4x equal x[4]
+variable p4y equal y[4]
+variable p4z equal z[4]
+
+
 compute comall all com
 
 variable comx equal c_comall[1]
@@ -111,6 +128,12 @@ variable tsteps equal time
 fix link_pos all print ${recordinterval} "${tsteps} ${x1} ${y1} ${z1} ${x2} ${y2} ${z2} ${x3} ${y3} ${z3} ${x4} ${y4} ${z4} ${x5} ${y5} ${z5} " file link_pos/link_pos.${xx}.txt screen no
 
 fix e2e_pos all print ${recordinterval} "${tsteps} ${e1x} ${e1y} ${e1z} ${e2x} ${e2y} ${e2z} " file e2e_pos/e2e_pos.${xx}.txt screen no
+
+fix face_vec_pos all print ${recordinterval} "${tsteps} ${fv1x} ${fv1y} ${fv1z} ${fv2x} ${fv2y} ${fv2z}"  file face_vec_pos/face_vec_pos.${xx}.txt screen no
+
+fix axial_ortho_pos all print ${recordinterval} "${tsteps} ${e1x} ${e1y} ${e1z} ${axor5x} ${axor5y} ${axor5z}"  file axial_ortho_pos/axial_ortho_pos.${xx}.txt screen no
+
+fix p4_pos all print ${recordinterval} "${p4x} ${p4y} ${p4z}" file p4_pos/p4_pos.${xx}.txt screen no
 
 fix com_pos all print ${recordinterval} "${tsteps} ${comx} ${comy} ${comz}" file com_pos/com_pos.${xx}.txt screen no
 

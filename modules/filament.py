@@ -17,6 +17,7 @@ class filament:
 
         self.__layers = []
         self.linker_positions = []
+        self.basis_sets = []
         self.__angles = []
         self.__bonds = []
 
@@ -32,6 +33,7 @@ class filament:
         self.__layers.append(l)
         a = (self.__monomer_diameter)
         h, f, g = l.get_basis()
+        self.basis_sets.append([h,f,g])
         gap_count = 0
 
         ### To get the positions of the linkers ###

@@ -94,7 +94,7 @@ angle_styles = [
 bondlength = 2.5
 
 # Angle between the chain and the membrane (in degrees)
-theta = 0
+theta = 45
 theta = filter_angle(theta)
 print("theta in degrees =", theta)
 
@@ -104,7 +104,7 @@ print("theta in radians =", theta)
 # Chain info (only count polymer chain)
 n_chains = 1
 chain_offset = 10
-distance_from_axis = 173
+distance_from_axis = 0
 
 # Per chain numbers
 n_atoms = 20
