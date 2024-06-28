@@ -8,7 +8,7 @@ def f(x, m, c):
 
 
 t, ang_dev_rad, ang_dev_deg = np.loadtxt(
-    'data/ang_deviation.txt', unpack=True)
+    'data/ang_deviation.1.txt', unpack=True)
 
 t_max = len(t)
 sample_window_fraction = 0.02

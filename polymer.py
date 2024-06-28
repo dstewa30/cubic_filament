@@ -94,7 +94,7 @@ angle_styles = [
 bondlength = 2.5
 
 # Angle between the chain and the membrane (in degrees)
-theta = 45
+theta =45
 theta = filter_angle(theta)
 print("theta in degrees =", theta)
 
@@ -104,7 +104,7 @@ print("theta in radians =", theta)
 # Chain info (only count polymer chain)
 n_chains = 1
 chain_offset = 10
-distance_from_axis = 0
+distance_from_axis = 173
 
 # Per chain numbers
 n_atoms = 20
@@ -114,7 +114,7 @@ n_angles = n_bonds - 1
 n_cross_bonds = 0
 
 # ---Linker numbers---
-n_skip_mem_linkers = 4  # Gap between two successive linkers
+n_skip_mem_linkers = 100  # Gap between two successive linkers OLD ONE NOT IN USE ANYMORE
 n_linkers_cross = 0
 
 # ---Box dimensions---
@@ -170,6 +170,7 @@ for i in range(num_layers):
         pz = f1.layers[i].positions[j][2]
         positions.append([chain, monomer_atom, px, py, pz])
 
+## MUST UNCOMMENT THIS!!
 for pos in f1.linker_positions:
     px = pos[0]
     py = pos[1]
@@ -241,6 +242,7 @@ for bondpair in range((8*n_atoms)+4):
     bond = [bond_type, b_start, b_stop]
     bonds.append(bond)
 
+## MUST UNCOMMENT THIS!!!!
 tracker = 0
 link_tracker = 0
 bonds_near = False
@@ -256,6 +258,8 @@ for bondpair in range((8*n_atoms)+4, len(f1.bonds)):
     bonds.append(bond)    
     tracker += 1
 
+
+## Leave this commented ##
     # if tracker % 4 != 0 or tracker == 0:
     #     bond = [fila_link_bond1, b_start, b_stop]
     #     tracker += 1

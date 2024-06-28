@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 info = np.loadtxt('info.txt')
-num_simulations = 1050
+num_simulations = 1
 
 num_monomers = int(info[0])
 # num_linkers = int(info[1])

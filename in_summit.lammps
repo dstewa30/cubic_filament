@@ -2,7 +2,7 @@
 
 include in.variables
 
-variable prun equal 3000000
+variable prun equal 12000000
 variable recordinterval equal 1000
 variable pdump equal 1000
 variable temperature equal 310
@@ -41,7 +41,7 @@ bond_coeff 1 1500.0 2.5
 # bond_coeff 1 3000.0 2.5
 # bond_coeff 2 1500.0 2.5 
 bond_coeff 3 1500.0 2.5
-bond_coeff 2 1500.0 5.15388203202
+bond_coeff 2 1500.0 4.829629132
 
 
 angle_style harmonic
@@ -124,7 +124,7 @@ reset_timestep 0
 
 variable tsteps equal time
 
-
+# fix link_pos all print ${recordinterval} "${tsteps} ${x1} ${y1} ${z1} ${x2} ${y2} ${z2}" file link_pos/link_pos.${xx}.txt screen no
 fix link_pos all print ${recordinterval} "${tsteps} ${x1} ${y1} ${z1} ${x2} ${y2} ${z2} ${x3} ${y3} ${z3} ${x4} ${y4} ${z4} ${x5} ${y5} ${z5} " file link_pos/link_pos.${xx}.txt screen no
 
 fix e2e_pos all print ${recordinterval} "${tsteps} ${e1x} ${e1y} ${e1z} ${e2x} ${e2y} ${e2z} " file e2e_pos/e2e_pos.${xx}.txt screen no

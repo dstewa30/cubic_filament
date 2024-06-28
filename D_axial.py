@@ -1,10 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from modules.orthonormal import orthonormal_pair
 from scipy.optimize import curve_fit
 
 def line(x, a, b):
     return a*x+ b 
-
+run_once = False
+choosecross2 = False
 num_simulations = 1
 
 dimension = 1
@@ -33,6 +35,7 @@ for num_sim in range(1, 1+num_simulations):
         pure_ax_list = np.zeros(sample_window)
         # fv0 = np.array([fv2x[t0_i] - fv1x[t0_i], fv2y[t0_i] - fv1y[t0_i], fv2z[t0_i] - fv1z[t0_i]])
         e2e0 = np.array([e2x[t0_i] - e1x[t0_i], e2y[t0_i] - e1y[t0_i], e2z[t0_i] - e1z[t0_i]])
+        e2e0 = e2e0 / np.linalg(e2e0)
         # axor0 = np.array([axor1x[t0_i]-axor5x[t0_i], axor1y[t0_i]-axor5y[t0_i], axor1z[t0_i]-axor5z[t0_i]])
         # axor0 = axor0 / np.linalg.norm(axor0)
         # intermediate_vec0 = np.cross(axor0,fv0)
@@ -59,15 +62,53 @@ for num_sim in range(1, 1+num_simulations):
             # prime2standard = np.column_stack((h_prime, f_prime, g_prime))
 
             # f_prime_basis0 = np.dot(standard_to_basis0, f_prime)
-            f_planar_f = np.dot(f_prime, f0)
-            f_planar_g = np.dot(f_prime, g0)
-            f_planar = (f_planar_f * f0) + (f_planar_g *g0)
-            f_planar = f_planar / np.linalg.norm(f_planar)
+            f_prime_f0_comp = np.dot(f_prime, f0)
+            f_prime_g0_comp = np.dot(f_prime, g0)
+            f_prime_planar = (f_prime_f0_comp * f0) + (f_prime_g0_comp *g0)
+            f_prime_planar = f_prime_planar / np.linalg.norm(f_prime_planar)
 
-            phi = np.arccos(np.dot(f_planar,f0)) 
+            phi = np.arccos(np.dot(f_prime_planar,f0)) 
             
             e2e = np.array([e2x[i] - e1x[i], e2y[i] - e1y[i], e2z[i] - e1z[i]])
-            e2e_angle = np.arccos(np.dot(e2e0,e2e) / (np.linalg.norm(e2e0) * np.linalg.norm(e2e)))
+            # e30 = np.cross(e2e0,e2e)
+            # e30 = e30 / np.linalg.norm(e30)
+            # e20 = np.cross(e30,e2e0)
+            # e20 = e20 / np.linalg.norm(e20)
+
+            # e2e_transformed = [np.dot(e2e,e2e0), np.dot(e2e,e20), 0]
+            if choosecross2 == True:
+                y - np.cross(e2e,e2e0)
+            else:
+                y = np.cross(e2e0, e2e)
+
+            x = np.dot(e2e0, e2e)
+            mag_y = np.linalg.norm(y)
+            e2e_angle = np.arctan2(mag_y,x)
+
+            if e2e_angle > 3*np.pi/4 and run_once == False:
+                run_once = True
+                threesixty = True
+                cross1 = y
+                cross2 = -y
+                if cross1 < cross2:
+                    choosecross2 = True
+
+            if y < 0 and threesixty == True:
+                e2e_angle = 360 - e2e_angle
+
+
+            OG_Drot_list[i-t0_i] = e2e_angle
+
+
+
+
+
+            phi2 = np.arctan2(e2e_transformed[1], e2e_transformed[0])
+            if phi2 < 0:
+                phi2 += (2*np.pi)
+            
+            
+            
 
             # fv = np.array([fv2x[i] - fv1x[i], fv2y[i] - fv1y[i], fv2z[i] - fv1z[i]])
             # axor = np.array([axor1x[i]-axor5x[i], axor1y[i]-axor5y[i], axor1z[i]-axor5z[i]])
@@ -76,7 +117,7 @@ for num_sim in range(1, 1+num_simulations):
             # fin_vec0 = np.cross(intermediate_vec0,axor0)
             
             # ang_rot_list[i-t0_i] = fv_angle
-            OG_Drot_list[i-t0_i] = e2e_angle
+            
             pure_ax_list[i-t0_i] = phi
 
         # ang_sq_avg_sampled += (ang_rot_list)**2
