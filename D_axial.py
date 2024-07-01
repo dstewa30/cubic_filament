@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from modules.orthonormal import orthonormal_pair
 from scipy.optimize import curve_fit
+from modules import quaternions
 
 def line(x, a, b):
     return a*x+ b 
@@ -60,6 +61,11 @@ for num_sim in range(1, 1+num_simulations):
             g_prime = g_prime / np.linalg.norm(g_prime)
 
             # prime2standard = np.column_stack((h_prime, f_prime, g_prime))
+
+            rot_ax = np.cross(h0,h_prime)
+            rot_ax /= np.linalg.norm(rot_ax)
+            rotang = np.pi/4
+            rot_qt = quaternions.rotation_quaternion(rot_ax,rotang)
 
             # f_prime_basis0 = np.dot(standard_to_basis0, f_prime)
             f_prime_f0_comp = np.dot(f_prime, f0)

@@ -50,3 +50,12 @@ def qtndot(q1, q2):
 def rotate_vector(q, v):
     qv = quaternion(0, v)
     return (q * qv * q.conjugate()).v
+
+def find_angle(axis, p):
+    angle = int
+    axis = axis / norm(axis)
+    s = cos(angle / 2)
+    v = axis * sin(angle / 2)
+    rot_qt = quaternion(s,v)
+    p_qt = quaternion(0, p)
+    (rot_qt * p_qt * rot_qt.conjugate())
