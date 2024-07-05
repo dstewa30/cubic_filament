@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from modules.orthonormal import orthonormal_pair
 from scipy.optimize import curve_fit
-from modules import quaternions
+from modules import quaternions as qt
 
 def line(x, a, b):
     return a*x+ b 
@@ -64,16 +64,21 @@ for num_sim in range(1, 1+num_simulations):
 
             rot_ax = np.cross(h0,h_prime)
             rot_ax /= np.linalg.norm(rot_ax)
-            rotang = np.pi/4
-            rot_qt = quaternions.rotation_quaternion(rot_ax,rotang)
+            rotang = np.arccos(np.dot(h0,h_prime))
+            rot_qt = qt.rotation_quaternion(rot_ax,rotang)
+            f_prime_to_0 = qt.rotate_vector(rot_qt,f_prime)
+            g_prime_to_0 = qt.rotate_vector(rot_qt,g_prime)
+            f_disp = np.arccos((np.dot(f0,f_prime_to_0)))
+            g_disp = np.arccos((np.dot(g0,g_prime_to_0)))
+
 
             # f_prime_basis0 = np.dot(standard_to_basis0, f_prime)
-            f_prime_f0_comp = np.dot(f_prime, f0)
-            f_prime_g0_comp = np.dot(f_prime, g0)
-            f_prime_planar = (f_prime_f0_comp * f0) + (f_prime_g0_comp *g0)
-            f_prime_planar = f_prime_planar / np.linalg.norm(f_prime_planar)
+            # f_prime_f0_comp = np.dot(f_prime, f0)
+            # f_prime_g0_comp = np.dot(f_prime, g0)
+            # f_prime_planar = (f_prime_f0_comp * f0) + (f_prime_g0_comp *g0)
+            # f_prime_planar = f_prime_planar / np.linalg.norm(f_prime_planar)
 
-            phi = np.arccos(np.dot(f_prime_planar,f0)) 
+            # phi = np.arccos(np.dot(f_prime_planar,f0)) 
             
             e2e = np.array([e2x[i] - e1x[i], e2y[i] - e1y[i], e2z[i] - e1z[i]])
             # e30 = np.cross(e2e0,e2e)

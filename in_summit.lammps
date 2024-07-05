@@ -36,13 +36,20 @@ pair_coeff * *
 # pair_coeff 1 2 5.0 2.5 2.80615512077
 # pair_coeff 2 2 5.0 2.5 2.80615512077
 
-bond_style harmonic
-bond_coeff 1 1500.0 2.5
-# bond_coeff 1 3000.0 2.5
-# bond_coeff 2 1500.0 2.5 
-bond_coeff 3 1500.0 2.5
-bond_coeff 2 1500.0 4.829629132
+## BEFORE CURVATURE !!!
+# bond_style harmonic
+# bond_coeff 1 1500.0 2.5
+# bond_coeff 2 1500.0 4.829629132
+# bond_coeff 3 1500.0 2.5
 
+
+## AFTER CURVATURE !!
+bond_style harmonic
+bond_coeff 1 1500.0 4.2
+bond_coeff 2 1500.0 7
+bond_coeff 3 1500.0 4.2
+bond_coeff 4 1500.0 4.111780545
+bond_coeff 5 1500.0 4.288219455 
 
 angle_style harmonic
 angle_coeff 1 15000.0 180.0
@@ -61,25 +68,25 @@ fix 1 all nve/limit 1.0e-4
 fix wallchain1 chain1 wall/region membrane lj93 5.0 5.0 5.0
 fix walllinkermem link_mem wall/region membrane lj93 1500.0 2.5 10.0
 
-variable x1 equal x[85]
-variable y1 equal y[85]
-variable z1 equal z[85]
+# variable x1 equal x[85]
+# variable y1 equal y[85]
+# variable z1 equal z[85]
 
-variable x2 equal x[86]
-variable y2 equal y[86]
-variable z2 equal z[86]
+# variable x2 equal x[86]
+# variable y2 equal y[86]
+# variable z2 equal z[86]
 
-variable x3 equal x[87]
-variable y3 equal y[87]
-variable z3 equal z[87]
+# variable x3 equal x[87]
+# variable y3 equal y[87]
+# variable z3 equal z[87]
 
-variable x4 equal x[88]
-variable y4 equal y[88]
-variable z4 equal z[88]
+# variable x4 equal x[88]
+# variable y4 equal y[88]
+# variable z4 equal z[88]
 
-variable x5 equal x[89]
-variable y5 equal y[89]
-variable z5 equal z[89]
+# variable x5 equal x[89]
+# variable y5 equal y[89]
+# variable z5 equal z[89]
 
 variable e1x equal x[1]
 variable e1y equal y[1]
@@ -125,7 +132,7 @@ reset_timestep 0
 variable tsteps equal time
 
 # fix link_pos all print ${recordinterval} "${tsteps} ${x1} ${y1} ${z1} ${x2} ${y2} ${z2}" file link_pos/link_pos.${xx}.txt screen no
-fix link_pos all print ${recordinterval} "${tsteps} ${x1} ${y1} ${z1} ${x2} ${y2} ${z2} ${x3} ${y3} ${z3} ${x4} ${y4} ${z4} ${x5} ${y5} ${z5} " file link_pos/link_pos.${xx}.txt screen no
+# fix link_pos all print ${recordinterval} "${tsteps} ${x1} ${y1} ${z1} ${x2} ${y2} ${z2} ${x3} ${y3} ${z3} ${x4} ${y4} ${z4} ${x5} ${y5} ${z5} " file link_pos/link_pos.${xx}.txt screen no
 
 fix e2e_pos all print ${recordinterval} "${tsteps} ${e1x} ${e1y} ${e1z} ${e2x} ${e2y} ${e2z} " file e2e_pos/e2e_pos.${xx}.txt screen no
 

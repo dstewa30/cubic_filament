@@ -77,7 +77,7 @@ wall_linker = [1500.0, 2.5, 10.0]
 
 # Format: Bond_style name, bond type number, k, r0
 bonds_styles = [
-    ['harmonic', 1, 1500.0, 2.5]
+    ['harmonic', 1, 1500.0, 4.2]
 ]
 
 # Format: angle_style name, angle type number, k, theta0
@@ -91,10 +91,10 @@ angle_styles = [
 # ---Filament Parameters
 
 # Distance between two atoms in the filament
-bondlength = 2.5
+bondlength = 4.2
 
 # Angle between the chain and the membrane (in degrees)
-theta =45
+theta =0
 theta = filter_angle(theta)
 print("theta in degrees =", theta)
 
@@ -104,7 +104,7 @@ print("theta in radians =", theta)
 # Chain info (only count polymer chain)
 n_chains = 1
 chain_offset = 10
-distance_from_axis = 173
+distance_from_axis = 0
 
 # Per chain numbers
 n_atoms = 20
@@ -171,11 +171,11 @@ for i in range(num_layers):
         positions.append([chain, monomer_atom, px, py, pz])
 
 ## MUST UNCOMMENT THIS!!
-for pos in f1.linker_positions:
-    px = pos[0]
-    py = pos[1]
-    pz = pos[2]
-    positions.append([chain, linker_atom, px, py, pz])
+# for pos in f1.linker_positions:
+#     px = pos[0]
+#     py = pos[1]
+#     pz = pos[2]
+#     positions.append([chain, linker_atom, px, py, pz])
 
 # print(positions)
 
@@ -243,20 +243,20 @@ for bondpair in range((8*n_atoms)+4):
     bonds.append(bond)
 
 ## MUST UNCOMMENT THIS!!!!
-tracker = 0
-link_tracker = 0
-bonds_near = False
-for bondpair in range((8*n_atoms)+4, len(f1.bonds)):
-    b_start = f1.bonds[bondpair][0]
-    b_stop = f1.bonds[bondpair][1]
-    if tracker % 2 == 0:
-        bonds_near = not bonds_near
-    if bonds_near:
-        bond = [fila_link_bond1, b_start, b_stop]
-    else:
-        bond = [fila_link_bond2, b_start, b_stop]
-    bonds.append(bond)    
-    tracker += 1
+# tracker = 0
+# link_tracker = 0
+# bonds_near = False
+# for bondpair in range((8*n_atoms)+4, len(f1.bonds)):
+#     b_start = f1.bonds[bondpair][0]
+#     b_stop = f1.bonds[bondpair][1]
+#     if tracker % 2 == 0:
+#         bonds_near = not bonds_near
+#     if bonds_near:
+#         bond = [fila_link_bond1, b_start, b_stop]
+#     else:
+#         bond = [fila_link_bond2, b_start, b_stop]
+#     bonds.append(bond)    
+#     tracker += 1
 
 
 ## Leave this commented ##

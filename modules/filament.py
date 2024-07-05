@@ -47,7 +47,7 @@ class filament:
         for i in range(1,n_linkers_membrane):
             self.linker_positions.append(placeholder - (a*i*(self.__linker_gap+1))*h)
 
-        for k in range(1, self.__num_monomers + 2):
+        # for k in range(1, self.__num_monomers + 2):
             
             ### To get the positions of the linkers ###
             # p = []
@@ -63,19 +63,36 @@ class filament:
             # gap_count += 1
 
             ### To get bond pairs in the plane of each layer ###
-            for j in range((k*4)-3,(k*4)+1):
-                if j % 4 != 0:
-                    self.__bonds.append([j,j+1])
-                else:
-                    self.__bonds.append([j,j-3])
+            
+            
 
-            if k != self.__num_monomers + 1:
-                ### To get bond pairs between layers ###
-                for li in range((k*4)-3,(k*4)+1):
-                    self.__bonds.append([li, li+4])
+
+
+            ## NON CURVATURE BONDS!!
+            # for j in range((k*4)-3,(k*4)+1):
+            #     if j % 4 != 0:
+            #         self.__bonds.append([j,j+1])
+            #     else:
+            #         self.__bonds.append([j,j-3])
+
+            # if k != self.__num_monomers + 1:
+            #     ### To get bond pairs between layers ###
+            #     for li in range((k*4)-3,(k*4)+1):
+            #         self.__bonds.append([li, li+4])
                             
-                l = l.make_next_layer()
-                self.__layers.append(l)
+            #     l = l.make_next_layer()
+            #     self.__layers.append(l)
+
+        ## CURVATURE BONDS !!    
+        # 4.2 depth bonds
+        for k in range(1, (self.__num_monomers*4)+4, 2):
+            self.__bonds.append[1,k,k+1]
+
+        # 2L bonds (sides of trapezoid)
+        for k in range(1, (self.__num_monomers*4)+4, 2):
+            pass
+
+        
 
         ### To get the angles within the plane of each layer ###
         for l in range(len(self.__layers)):
