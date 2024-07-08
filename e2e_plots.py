@@ -9,7 +9,7 @@ num_monomers = int(info[0])
 # num_skip = int(info[2])
 
 for num_sim in range(1, 1+num_simulations):
-    t, e1x, e1y, e1z, e2x, e2y, e2z = np.loadtxt('e2e_pos/e2e_pos.{}.txt'.format(num_sim), unpack=True)
+    t, e1x_o, e1y_o, e1z_o, e1x_i, e1y_i, e1z_i, e2x_o, e2y_o, e2z_o, e2x_i, e2y_i, e2z_i  = np.loadtxt('e2e_pos/e2e_pos.{}.txt'.format(num_sim), unpack=True)
 
     hv0 = np.array([e1x[0] - e2x[0], e1y[0] - e2y[0], e1z[0] - e2z[0]])
 
@@ -51,17 +51,17 @@ for num_sim in range(1, 1+num_simulations):
     # plt.clf()
     # plt.cla()
 
-    # plt.figure(tight_layout=True)
+    plt.figure(tight_layout=True)
 
-    # plt.plot(t, e2e_dist_list, 'k-', linewidth=0.2, label='End to end distance')
-    # # plt.scatter(t, e2e_dist_list, s=5, label='End to end distance', color='k', marker='.', alpha=0.7, edgecolors='none')
+    plt.plot(t, e2e_dist_list, 'k-', linewidth=0.2, label='End to end distance')
+    # plt.scatter(t, e2e_dist_list, s=5, label='End to end distance', color='k', marker='.', alpha=0.7, edgecolors='none')
 
-    # plt.plot(t, e2e_mean_line, 'r--', linewidth=2, label='Mean distance', alpha=0.7)
-    # plt.xlabel(r'$t/\tau$', fontsize=18)
-    # plt.ylabel("End to end distance", fontsize=18)
-    # plt.xlim(0, max(t))
-    # plt.legend(loc='best', markerscale=2)
+    plt.plot(t, e2e_mean_line, 'r--', linewidth=2, label='Mean distance', alpha=0.7)
+    plt.xlabel(r'$t/\tau$', fontsize=18)
+    plt.ylabel("End to end distance", fontsize=18)
+    plt.xlim(0, max(t))
+    plt.legend(loc='best', markerscale=2)
 
-    # plt.savefig('e2e_dist.{}.pdf'.format(num_sim))
+    plt.savefig('e2e_dist.{}.pdf'.format(num_sim))
 
         

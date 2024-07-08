@@ -37,8 +37,8 @@ com_pos_fname_str = 'data/com_pos.txt'
 
 # ---Types---
 atom_types = 2
-bond_types = 3
-angle_types = 1
+bond_types = 4
+angle_types = 3
 
 # ---LAMMPS INPUT FILE PARAMETERS START---
 # These directly get written into the LAMMPS file
@@ -108,6 +108,8 @@ distance_from_axis = 0
 
 # Per chain numbers
 n_atoms = 20
+side_a = 4.2
+R = 100
 n_bonds = n_atoms - 1
 n_angles = n_bonds - 1
 
@@ -153,7 +155,7 @@ positions = []
 start=[(xhi - xlo)/2.0, (yhi - ylo)/2.0 + distance_from_axis, (zhi - zlo)/2.0]
 head=[0,-np.cos(theta), -np.sin(theta)]
 
-f1 = filament(n_atoms, bondlength, start, head, num_linker_chain, linker_gap, link_diff)
+f1 = filament(n_atoms, bondlength, start, head, num_linker_chain, linker_gap, link_diff, side_a, R)
 # dump_filament("test.xyz", [f1], True)
 
 num_layers = len(f1.layers)
@@ -161,7 +163,6 @@ chain = 1
 thisatom = 1
 monomer_atom = 1
 linker_atom = 2
-
 
 for i in range(num_layers):
     for j in range(len(f1.layers[i].positions)):
@@ -223,10 +224,10 @@ chain = 1
 bonds = []
 
 # linear bonds in chain1, bond type = 1
-bond_type = 1
-linker_bond = 2
-fila_link_bond1 = 3
-fila_link_bond2 = 2
+# bond_type = 1
+# linker_bond = 2
+# fila_link_bond1 = 3
+# fila_link_bond2 = 2
 
 # ORIGINAL
 # for i in range(n_atoms - 1):
@@ -237,9 +238,10 @@ fila_link_bond2 = 2
 
 ### Identifying the bondpairs within the filament ###
 for bondpair in range((8*n_atoms)+4):
-    b_start = f1.bonds[bondpair][0]
-    b_stop = f1.bonds[bondpair][1]
-    bond = [bond_type, b_start, b_stop]
+    b_type = f1.bonds[bondpair][0]
+    b_start = f1.bonds[bondpair][1]
+    b_stop = f1.bonds[bondpair][2]
+    bond = [b_type, b_start, b_stop]
     bonds.append(bond)
 
 ## MUST UNCOMMENT THIS!!!!
@@ -276,12 +278,12 @@ for bondpair in range((8*n_atoms)+4):
 
 # ---Setup angles---
 angles = []
-angle_type = 1
 
 for ang in f1.angles:
-    p1 = ang[0]
-    p2 = ang[1]
-    p3 = ang[2]
+    angle_type = ang[0]
+    p1 = ang[1]
+    p2 = ang[2]
+    p3 = ang[3]
     tot_ang = [angle_type,p1,p2,p3]
     angles.append(tot_ang)
 

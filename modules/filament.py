@@ -6,7 +6,7 @@ from numpy import sqrt, pi, cos, sin
 
 
 class filament:
-    def __init__(self, num_monomers, monomer_diameter, start_pos, heading,num_linker_chain,linker_gap, link_diff):
+    def __init__(self, num_monomers, monomer_diameter, start_pos, heading,num_linker_chain,linker_gap, link_diff, side_a, R):
         self.__num_monomers = num_monomers
         self.__monomer_diameter = monomer_diameter
         self.__start_pos = np.array(start_pos)
@@ -14,6 +14,8 @@ class filament:
         self.__num_linker_chain = num_linker_chain
         self.__linker_gap = linker_gap
         self.__link_diff = link_diff
+        self.__side_a = side_a
+        self.__R = R
 
         self.__layers = []
         self.linker_positions = []
@@ -47,26 +49,12 @@ class filament:
         for i in range(1,n_linkers_membrane):
             self.linker_positions.append(placeholder - (a*i*(self.__linker_gap+1))*h)
 
-        # for k in range(1, self.__num_monomers + 2):
+        for k in range(1, self.__num_monomers + 1):
             
-            ### To get the positions of the linkers ###
-            # p = []
-            # if gap_count % (self.__linker_gap+2) == 0 and gap_count != self.__num_monomers:
-            #     p.append(l.positions[0] + (a*f)/2 + (a*h)/2 - (self.__link_diff*g))
-            #     # for bead in range(self.__num_linker_chain-1):
-            #     #     placeholder = p[-1]
-            #     #     p.append(placeholder-(self.__link_diff*g))
-
-            #     for linker_pos in p:
-            #         self.linker_positions.append(linker_pos)
-
-            # gap_count += 1
+            l = l.make_next_layer()
+            self.__layers.append(l)
 
             ### To get bond pairs in the plane of each layer ###
-            
-            
-
-
 
             ## NON CURVATURE BONDS!!
             # for j in range((k*4)-3,(k*4)+1):
@@ -86,42 +74,104 @@ class filament:
         ## CURVATURE BONDS !!    
         # 4.2 depth bonds
         for k in range(1, (self.__num_monomers*4)+4, 2):
-            self.__bonds.append[1,k,k+1]
+            self.__bonds.append([1,k,k+1])
 
-        # 2L bonds (sides of trapezoid)
-        for k in range(1, (self.__num_monomers*4)+4, 2):
-            pass
+        # 2L bonds (diagnonal sides of trapezoid)
+        for k in range(2, (self.__num_monomers*4)+4, 4):
+            self.__bonds.append([2,k,k+1])
+            self.__bonds.append([2,k+2,k-1])
 
+        # Short base trapezoid bonds -- a2
+        for k in range(1, (self.__num_monomers*4), 4):
+            self.__bonds.append([3,k,k+4])
+            self.__bonds.append([3,k+1,k+5])
+
+        # Long base trapezoid bonds -- a1
+        for k in range(3, (self.__num_monomers*4), 4):
+            self.__bonds.append([4,k,k+4])
+            self.__bonds.append([4,k+1,k+5])
         
 
         ### To get the angles within the plane of each layer ###
-        for l in range(len(self.__layers)):
-            for counter in range(1,5):
-                triplet1 = [(counter)+(4*l), ((counter)%4)+(4*l)+1, ((counter+1)%4)+(4*l)+1]
-                self.__angles.append(triplet1)
+        L = (self.__R*a)/(np.sqrt(4*(self.__R**2) - (self.__side_a**2)))
+        correction_factor = (self.__side_a**2)/(np.sqrt(4*(self.__R**2)-(self.__side_a**2)))
+        a1 = self.__side_a + correction_factor
+        a2 = self.__side_a - correction_factor
+        alpha = np.arccos(self.__side_a/(2*L))
+
+        long_side_theta = 90 - alpha
+        short_side_theta = 90 + alpha 
+        perp = 90
+
+        ## CURVATURE ANGLES
+        # Perpendicular Angles
+        # Rect Prism Depth face
+        for k in range(1, (self.__num_monomers*4)+4, 4):
+            self.__angles.append([1,k,k+1,k+2])
+            self.__angles.append([1,k+1,k+2,k+3])
+            self.__angles.append([1,k+2,k+3,k])
+            self.__angles.append([1,k+3,k,k+1])
+
+        # Long base top face    
+        for k in range(3, (self.__num_monomers*4), 4):
+            self.__angles.append([1,k,k+4,k+5])
+            self.__angles.append([1,k+4,k+5,k+1])
+            self.__angles.append([1,k+5,k+1,k])
+            self.__angles.append([1,k+1,k,k+4])
+
+        # Short base bottom face
+        for k in range(2, (self.__num_monomers*4), 4):
+            self.__angles.append([1,k,k+4,k+3])
+            self.__angles.append([1,k+4,k+3,k-1])
+            self.__angles.append([1,k+3,k-1,k])
+            self.__angles.append([1,k-1,k,k+4])
+
+        # Trap face front
+        for k in range(3, (self.__num_monomers*4), 4):
+            self.__angles.append([2,k,k-1,k+3])
+            self.__angles.append([2,k-1,k+3,k+4])
+            self.__angles.append([3,k+3,k+4,k])
+            self.__angles.append([3,k+4,k,k-1])
+
+        # Trap face back
+        for k in range(4, (self.__num_monomers*4)+1, 4):
+            self.__angles.append([2,k,k-3,k+1])
+            self.__angles.append([2,k-3,k+1,k+4])
+            self.__angles.append([3,k+1,k+4,k])
+            self.__angles.append([3,k+4,k,k-3])
 
 
-        for l in range(len(self.__layers)-1):
-            for counter in range(1,5):
-                ### Each point in each layer form 2 angles involving a point in the layer below it ###
-                ### Here we get the 2 angles for each point between the layer and the layer below  ###
-                triplet2 = [((counter)%4)+1+(4*l), ((counter)+(4*l)), ((counter+3)%4)+5+(4*l)]
-                self.__angles.append(triplet2)
-                n=triplet2[0]
-                triplet3 = [n,triplet2[1],triplet2[2]]
-                triplet3[0] = ((triplet3[0] + 1)%(4) + 1 +(4*l))
-                self.__angles.append(triplet3)
 
-                ### These next two triplets then consider the 2 angles involving a point in layer ###
-                ### formed with another point in the layer above                                  ###  
-                triplet4 = [n,triplet2[2],triplet2[1]]
-                triplet4[0] += 4
-                self.__angles.append(triplet4)
+        ## NON CURVATURE ANGLES
+        # for l in range(len(self.__layers)):
+        #     for counter in range(1,5):
+        #         triplet1 = [(counter)+(4*l), ((counter)%4)+(4*l)+1, ((counter+1)%4)+(4*l)+1]
+        #         self.__angles.append(triplet1)
 
-                n2=triplet3[0]
-                triplet5 = [n2,triplet2[2],triplet2[1]]
-                triplet5[0] += 4
-                self.__angles.append(triplet5)
+
+        # for l in range(len(self.__layers)-1):
+        #     for counter in range(1,5):
+        #         ### Each point in each layer form 2 angles involving a point in the layer below it ###
+        #         ### Here we get the 2 angles for each point between the layer and the layer below  ###
+        #         triplet2 = [((counter)%4)+1+(4*l), ((counter)+(4*l)), ((counter+3)%4)+5+(4*l)]
+        #         self.__angles.append(triplet2)
+        #         n=triplet2[0]
+        #         triplet3 = [n,triplet2[1],triplet2[2]]
+        #         triplet3[0] = ((triplet3[0] + 1)%(4) + 1 +(4*l))
+        #         self.__angles.append(triplet3)
+
+        #         ### These next two triplets then consider the 2 angles involving a point in layer ###
+        #         ### formed with another point in the layer above                                  ###  
+        #         triplet4 = [n,triplet2[2],triplet2[1]]
+        #         triplet4[0] += 4
+        #         self.__angles.append(triplet4)
+
+        #         n2=triplet3[0]
+        #         triplet5 = [n2,triplet2[2],triplet2[1]]
+        #         triplet5[0] += 4
+        #         self.__angles.append(triplet5)
+
+        ## END OF NON CURVATURE ANGLES
 
         ### To calculate bond pairs of linkers ###
         # this_linker = 1 + (self.__num_monomers+1)*4

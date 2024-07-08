@@ -45,15 +45,16 @@ pair_coeff * *
 
 ## AFTER CURVATURE !!
 bond_style harmonic
-bond_coeff 1 1500.0 4.2
-bond_coeff 2 1500.0 7
-bond_coeff 3 1500.0 4.2
-bond_coeff 4 1500.0 4.111780545
-bond_coeff 5 1500.0 4.288219455 
+bond_coeff 1 1500.0 4.2             # 4.2 Depth Bonds
+bond_coeff 2 1500.0 4.200926406     # 2L Diagonal Trap Side Bonds
+bond_coeff 3 1500.0 4.111780545     # Short base trap bonds -- a2
+bond_coeff 4 1500.0 4.288219455     # Long base trap bonds -- a1
 
 angle_style harmonic
-angle_coeff 1 15000.0 180.0
-# angle_coeff 1 20000.0 180.0
+angle_coeff 1 15000.0 90.0         # Perpendicular angles
+angle_coeff 2 15000.0 91.20329955  # 90 + Alpha (short base)
+angle_coeff 3 15000.0 88.79670045  # 90 - Alpha (long base)
+
 
 
 timestep 0.00001000
@@ -88,29 +89,37 @@ fix walllinkermem link_mem wall/region membrane lj93 1500.0 2.5 10.0
 # variable y5 equal y[89]
 # variable z5 equal z[89]
 
-variable e1x equal x[1]
-variable e1y equal y[1]
-variable e1z equal z[1]
+variable e1x_o equal x[3]
+variable e1y_o equal y[3]
+variable e1z_o equal z[3]
 
-variable e2x equal x[81]
-variable e2y equal y[81]
-variable e2z equal z[81]
+variable e1x_i equal x[2]
+variable e1y_i equal y[2]
+variable e1z_i equal z[2]
 
-variable fv1x equal x[1]
-variable fv1y equal y[1]
-variable fv1z equal z[1]
+variable e2x_i equal x[82]
+variable e2y_i equal y[82]
+variable e2z_i equal z[82]
 
-variable fv2x equal x[2]
-variable fv2y equal y[2]
-variable fv2z equal z[2]
+variable e2x_o equal x[83]
+variable e2y_o equal y[83]
+variable e2z_o equal z[83]
 
-variable axor5x equal x[5]
-variable axor5y equal y[5]
-variable axor5z equal z[5]
+# variable fv1x equal x[1]
+# variable fv1y equal y[1]
+# variable fv1z equal z[1]
 
-variable p4x equal x[4]
-variable p4y equal y[4]
-variable p4z equal z[4]
+# variable fv2x equal x[2]
+# variable fv2y equal y[2]
+# variable fv2z equal z[2]
+
+# variable axor5x equal x[5]
+# variable axor5y equal y[5]
+# variable axor5z equal z[5]
+
+# variable p4x equal x[4]
+# variable p4y equal y[4]
+# variable p4z equal z[4]
 
 
 compute comall all com
@@ -134,15 +143,15 @@ variable tsteps equal time
 # fix link_pos all print ${recordinterval} "${tsteps} ${x1} ${y1} ${z1} ${x2} ${y2} ${z2}" file link_pos/link_pos.${xx}.txt screen no
 # fix link_pos all print ${recordinterval} "${tsteps} ${x1} ${y1} ${z1} ${x2} ${y2} ${z2} ${x3} ${y3} ${z3} ${x4} ${y4} ${z4} ${x5} ${y5} ${z5} " file link_pos/link_pos.${xx}.txt screen no
 
-fix e2e_pos all print ${recordinterval} "${tsteps} ${e1x} ${e1y} ${e1z} ${e2x} ${e2y} ${e2z} " file e2e_pos/e2e_pos.${xx}.txt screen no
+fix e2e_pos all print ${recordinterval} "${tsteps} ${e1x_o} ${e1y_o} ${e1z_o} ${e1x_i} ${e1y_i} ${e1z_i} ${e2x_o} ${e2y_o} ${e2z_o} ${e2x_i} ${e2y_i} ${e2z_i} " file e2e_pos/e2e_pos.${xx}.txt screen no
 
-fix face_vec_pos all print ${recordinterval} "${tsteps} ${fv1x} ${fv1y} ${fv1z} ${fv2x} ${fv2y} ${fv2z}"  file face_vec_pos/face_vec_pos.${xx}.txt screen no
+# fix face_vec_pos all print ${recordinterval} "${tsteps} ${fv1x} ${fv1y} ${fv1z} ${fv2x} ${fv2y} ${fv2z}"  file face_vec_pos/face_vec_pos.${xx}.txt screen no
 
-fix axial_ortho_pos all print ${recordinterval} "${tsteps} ${e1x} ${e1y} ${e1z} ${axor5x} ${axor5y} ${axor5z}"  file axial_ortho_pos/axial_ortho_pos.${xx}.txt screen no
+# fix axial_ortho_pos all print ${recordinterval} "${tsteps} ${e1x} ${e1y} ${e1z} ${axor5x} ${axor5y} ${axor5z}"  file axial_ortho_pos/axial_ortho_pos.${xx}.txt screen no
 
-fix p4_pos all print ${recordinterval} "${p4x} ${p4y} ${p4z}" file p4_pos/p4_pos.${xx}.txt screen no
+# fix p4_pos all print ${recordinterval} "${p4x} ${p4y} ${p4z}" file p4_pos/p4_pos.${xx}.txt screen no
 
-fix com_pos all print ${recordinterval} "${tsteps} ${comx} ${comy} ${comz}" file com_pos/com_pos.${xx}.txt screen no
+# fix com_pos all print ${recordinterval} "${tsteps} ${comx} ${comy} ${comz}" file com_pos/com_pos.${xx}.txt screen no
 
 dump mydump all atom ${pdump} dump/dump.${xx}.lammpstrj
 
