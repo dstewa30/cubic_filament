@@ -6,16 +6,12 @@ from numpy import sqrt, pi, cos, sin
 
 
 class filament:
-    def __init__(self, num_monomers, monomer_diameter, start_pos, heading,num_linker_chain,linker_gap, link_diff, side_a, R):
+    def __init__(self, num_monomers, monomer_diameter, start_pos, heading, num_linkers):
         self.__num_monomers = num_monomers
         self.__monomer_diameter = monomer_diameter
         self.__start_pos = np.array(start_pos)
         self.__heading = np.array(heading)
-        self.__num_linker_chain = num_linker_chain
-        self.__linker_gap = linker_gap
-        self.__link_diff = link_diff
-        self.__side_a = side_a
-        self.__R = R
+        self.__num_linkers = num_linkers
 
         self.__layers = []
         self.linker_positions = []
@@ -39,37 +35,19 @@ class filament:
         gap_count = 0
 
         ### To get the positions of the linkers ###
-        n_linkers_membrane = 0
-        for i in range(self.__num_monomers):
-            if (i % (self.__linker_gap+1) == 0):
-                n_linkers_membrane += 1
+        linker_gap = self.__num_monomers // self.__num_linkers
 
-        self.linker_positions.append(l.positions[0] + (a*f)/2 + (self.__num_monomers*a-(a/2))*h - (self.__link_diff*g))
+        link_height = 2 # This is arbitrary due to bonds
+
+        self.linker_positions.append(l.positions[0] + (a*f)/2 + ((self.__num_monomers*a-(a/2))*h) +  (link_height + a)*g)
         placeholder = self.linker_positions[0]
-        for i in range(1,n_linkers_membrane):
-            self.linker_positions.append(placeholder - (a*i*(self.__linker_gap+1))*h)
-
+        for i in range(1, self.__num_linkers):
+            self.linker_positions.append(placeholder - (a*i*(linker_gap))*h)
+            
         for k in range(1, self.__num_monomers + 1):
             
             l = l.make_next_layer()
             self.__layers.append(l)
-
-            ### To get bond pairs in the plane of each layer ###
-
-            ## NON CURVATURE BONDS!!
-            # for j in range((k*4)-3,(k*4)+1):
-            #     if j % 4 != 0:
-            #         self.__bonds.append([j,j+1])
-            #     else:
-            #         self.__bonds.append([j,j-3])
-
-            # if k != self.__num_monomers + 1:
-            #     ### To get bond pairs between layers ###
-            #     for li in range((k*4)-3,(k*4)+1):
-            #         self.__bonds.append([li, li+4])
-                            
-            #     l = l.make_next_layer()
-            #     self.__layers.append(l)
 
         ## CURVATURE BONDS !!    
         # 4.2 depth bonds
@@ -90,18 +68,25 @@ class filament:
         for k in range(3, (self.__num_monomers*4), 4):
             self.__bonds.append([4,k,k+4])
             self.__bonds.append([4,k+1,k+5])
-        
 
-        ### To get the angles within the plane of each layer ###
-        L = (self.__R*a)/(np.sqrt(4*(self.__R**2) - (self.__side_a**2)))
-        correction_factor = (self.__side_a**2)/(np.sqrt(4*(self.__R**2)-(self.__side_a**2)))
-        a1 = self.__side_a + correction_factor
-        a2 = self.__side_a - correction_factor
-        alpha = np.arccos(self.__side_a/(2*L))
+        num_beads_f = (self.__num_monomers*4) + 4
 
-        long_side_theta = 90 - alpha
-        short_side_theta = 90 + alpha 
-        perp = 90
+        # LINKER BONDS
+        # Near Bonds
+        for k, i in zip(range(num_beads_f+1, num_beads_f + 1 + self.__num_linkers), range((num_beads_f - 5), 1, -4*linker_gap)):  
+            self.__bonds.append([5,k,i])
+            self.__bonds.append([5,k,i+4])
+            self.__bonds.append([5,k,i+5])
+            self.__bonds.append([5,k,i+1])
+
+        # Far Bonds
+        for k, i in zip(range(num_beads_f+1, num_beads_f + 1 + self.__num_linkers), range((num_beads_f - 6), 1, -4*linker_gap)):
+            bond_type = 6
+            self.__bonds.append([bond_type,k,i])
+            self.__bonds.append([bond_type,k,i+4])
+            self.__bonds.append([bond_type,k,i+3])
+            self.__bonds.append([bond_type,k,i-1])
+
 
         ## CURVATURE ANGLES
         # Perpendicular Angles
@@ -140,38 +125,8 @@ class filament:
             self.__angles.append([3,k+1,k+4,k])
             self.__angles.append([3,k+4,k,k-3])
 
+        ### To calculate bond pairs of linkers ###
 
-
-        ## NON CURVATURE ANGLES
-        # for l in range(len(self.__layers)):
-        #     for counter in range(1,5):
-        #         triplet1 = [(counter)+(4*l), ((counter)%4)+(4*l)+1, ((counter+1)%4)+(4*l)+1]
-        #         self.__angles.append(triplet1)
-
-
-        # for l in range(len(self.__layers)-1):
-        #     for counter in range(1,5):
-        #         ### Each point in each layer form 2 angles involving a point in the layer below it ###
-        #         ### Here we get the 2 angles for each point between the layer and the layer below  ###
-        #         triplet2 = [((counter)%4)+1+(4*l), ((counter)+(4*l)), ((counter+3)%4)+5+(4*l)]
-        #         self.__angles.append(triplet2)
-        #         n=triplet2[0]
-        #         triplet3 = [n,triplet2[1],triplet2[2]]
-        #         triplet3[0] = ((triplet3[0] + 1)%(4) + 1 +(4*l))
-        #         self.__angles.append(triplet3)
-
-        #         ### These next two triplets then consider the 2 angles involving a point in layer ###
-        #         ### formed with another point in the layer above                                  ###  
-        #         triplet4 = [n,triplet2[2],triplet2[1]]
-        #         triplet4[0] += 4
-        #         self.__angles.append(triplet4)
-
-        #         n2=triplet3[0]
-        #         triplet5 = [n2,triplet2[2],triplet2[1]]
-        #         triplet5[0] += 4
-        #         self.__angles.append(triplet5)
-
-        ## END OF NON CURVATURE ANGLES
 
         ### To calculate bond pairs of linkers ###
         # this_linker = 1 + (self.__num_monomers+1)*4
@@ -194,13 +149,13 @@ class filament:
         #             #     this_linker += 1
         #         this_linker += 1
 
-        this_linker = 1 + (self.__num_monomers+1)*4
-        for gap_count in range(self.__num_monomers):
-            if gap_count % (self.__linker_gap+1) == 0:
-                for i in range(1+(4*(self.__num_monomers-1))-(gap_count*4),9+(4*(self.__num_monomers-1))-(gap_count*4)):
-                    bondpair = [i,this_linker]
-                    self.__bonds.append(bondpair)
-                this_linker += 1 
+        # this_linker = 1 + (self.__num_monomers+1)*4
+        # for gap_count in range(self.__num_monomers):
+        #     if gap_count % (self.__linker_gap+1) == 0:
+        #         for i in range(1+(4*(self.__num_monomers-1))-(gap_count*4),9+(4*(self.__num_monomers-1))-(gap_count*4)):
+        #             bondpair = [i,this_linker]
+        #             self.__bonds.append(bondpair)
+        #         this_linker += 1 
                     
 
             

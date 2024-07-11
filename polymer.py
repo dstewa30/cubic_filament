@@ -37,7 +37,7 @@ com_pos_fname_str = 'data/com_pos.txt'
 
 # ---Types---
 atom_types = 2
-bond_types = 4
+bond_types = 6
 angle_types = 3
 
 # ---LAMMPS INPUT FILE PARAMETERS START---
@@ -94,7 +94,7 @@ angle_styles = [
 bondlength = 4.2
 
 # Angle between the chain and the membrane (in degrees)
-theta =0
+theta = 0
 theta = filter_angle(theta)
 print("theta in degrees =", theta)
 
@@ -104,7 +104,7 @@ print("theta in radians =", theta)
 # Chain info (only count polymer chain)
 n_chains = 1
 chain_offset = 10
-distance_from_axis = 0
+distance_from_axis = 0 #348
 
 # Per chain numbers
 n_atoms = 20
@@ -121,8 +121,8 @@ n_linkers_cross = 0
 
 # ---Box dimensions---
 xlo, xhi = 0.0, 1000
-ylo, yhi = 0.0, 350
-zlo, zhi = 0.0, 350
+ylo, yhi = 0.0, 700
+zlo, zhi = 0.0, 700
 
 if (make_walls_big == 1):
     xlo, xhi = 0.0, 1000
@@ -138,24 +138,22 @@ mass = [
 ################## END INPUTS #####################
 
 num_linker_chain = 1
-linker_gap = 3
-link_diff = np.sqrt(bondlength**2 - (bondlength/2)**2) + 1
-# link_diff = 
+num_linkers = 5
 
 # ---Setup linker numbers---
-n_linkers_membrane = 0
-for i in range(n_atoms):
-   if (i % (linker_gap+1) == 0):
-       n_linkers_membrane += 1
+# n_linkers_membrane = 0
+# for i in range(n_atoms):
+#    if (i % (linker_gap+1) == 0):
+#        n_linkers_membrane += 1
 # n_bonds += n_linkers_membrane
 
 # ---Setup positions---
 positions = []
 
-start=[(xhi - xlo)/2.0, (yhi - ylo)/2.0 + distance_from_axis, (zhi - zlo)/2.0]
-head=[0,-np.cos(theta), -np.sin(theta)]
+start=[(xhi - xlo)/2.0, (yhi - ylo)/2.0 - distance_from_axis, (zhi - zlo)/2.0]
+head=[0, np.cos(theta), -np.sin(theta)]
 
-f1 = filament(n_atoms, bondlength, start, head, num_linker_chain, linker_gap, link_diff, side_a, R)
+f1 = filament(n_atoms, bondlength, start, head, num_linkers)
 # dump_filament("test.xyz", [f1], True)
 
 num_layers = len(f1.layers)
@@ -171,110 +169,23 @@ for i in range(num_layers):
         pz = f1.layers[i].positions[j][2]
         positions.append([chain, monomer_atom, px, py, pz])
 
-## MUST UNCOMMENT THIS!!
-# for pos in f1.linker_positions:
-#     px = pos[0]
-#     py = pos[1]
-#     pz = pos[2]
-#     positions.append([chain, linker_atom, px, py, pz])
-
-# print(positions)
-
-# print(positions)
-
-        # elif j > 3:
-        #     linker_positions.append([chain, linker_atom, px, py, pz])
-
-
-        # print("atom = ", j)
-    # print(f1.layers[i].positions)
-
-### SPHERICAL APPROXIMATION ###
-
-# for i in range(n_atoms):
-#     thisatom = normalatom
-
-#     # # For chain parallel to surface
-#     # px = (xhi - xlo)/2.0
-#     # py = (yhi - ylo)/2.0 + distance_from_axis
-#     # pz = -(i * bondlength) + (zhi - zlo)/2
-
-#     # For chain perpendicular to surface/at an angle
-#     px = (xhi - xlo)/2.0
-#     py = (yhi - ylo)/2.0 + distance_from_axis - i * bondlength * np.cos(theta)
-#     pz = (zhi - zlo)/2.0 - i * bondlength * np.sin(theta)
-
-#     positions.append([chain, thisatom, px, py, pz])
-
-# # Linkers
-thisatom = 2
-chain = 1
-# print("membrane linkers =", n_linkers_membrane)
-# for i in range(n_linkers_membrane):
-#     j = i * n_skip_mem_linkers
-#     j = n_atoms - j - 1
-#     print("L {} placed with m {}".format(i+1+n_atoms, j+1))
-#     px = positions[j][2] - bondlength
-#     py = positions[j][3]
-#     pz = positions[j][4]
-#     positions.append([chain, thisatom, px, py, pz])
-
+## Linker Positions
+for pos in f1.linker_positions:
+    px = pos[0]
+    py = pos[1]
+    pz = pos[2]
+    positions.append([chain, linker_atom, px, py, pz])
 
 # ---Setup bonds----
 bonds = []
 
-# linear bonds in chain1, bond type = 1
-# bond_type = 1
-# linker_bond = 2
-# fila_link_bond1 = 3
-# fila_link_bond2 = 2
-
-# ORIGINAL
-# for i in range(n_atoms - 1):
-#     b_start = i+1
-#     b_stop = b_start + 1
-#     bond = [bond_type, b_start, b_stop]
-#     bonds.append(bond)
-
 ### Identifying the bondpairs within the filament ###
-for bondpair in range((8*n_atoms)+4):
+for bondpair in range(len(f1.bonds)):
     b_type = f1.bonds[bondpair][0]
     b_start = f1.bonds[bondpair][1]
     b_stop = f1.bonds[bondpair][2]
     bond = [b_type, b_start, b_stop]
     bonds.append(bond)
-
-## MUST UNCOMMENT THIS!!!!
-# tracker = 0
-# link_tracker = 0
-# bonds_near = False
-# for bondpair in range((8*n_atoms)+4, len(f1.bonds)):
-#     b_start = f1.bonds[bondpair][0]
-#     b_stop = f1.bonds[bondpair][1]
-#     if tracker % 2 == 0:
-#         bonds_near = not bonds_near
-#     if bonds_near:
-#         bond = [fila_link_bond1, b_start, b_stop]
-#     else:
-#         bond = [fila_link_bond2, b_start, b_stop]
-#     bonds.append(bond)    
-#     tracker += 1
-
-
-## Leave this commented ##
-    # if tracker % 4 != 0 or tracker == 0:
-    #     bond = [fila_link_bond1, b_start, b_stop]
-    #     tracker += 1
-    # elif tracker % 4 == 0 and num_linker_chain != 1:
-    #     bond = [linker_bond, b_start, b_stop]
-    #     link_tracker += 1
-    #     if link_tracker == num_linker_chain - 1:
-    #         tracker = 0
-    #         link_tracker = 0
-    # elif num_linker_chain == 1:
-    #     tracker = 0
-    
-    # bonds.append(bond)
 
 # ---Setup angles---
 angles = []
@@ -302,7 +213,7 @@ for ang in f1.angles:
 # ---Write data file for information---
 with open(info_fname_str, 'w') as info_f:
     info_f.write('{}\n'.format(n_atoms))
-    info_f.write('{}\n'.format(n_linkers_membrane))
+    info_f.write('{}\n'.format(num_linkers))
     info_f.write('{}\n'.format(n_skip_mem_linkers))
 
 # ---Write data file for atoms---

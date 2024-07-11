@@ -6,6 +6,7 @@ variable prun equal 12000000
 variable recordinterval equal 1000
 variable pdump equal 1000
 variable temperature equal 310
+variable n_mono equal 20
 
 units lj
 dimension 3
@@ -18,7 +19,7 @@ atom_style molecular
 read_data polymer.data
 
 # region membrane cylinder x 175.0 175.0 175.0 0 1000
-region membrane block 0 1000 0 350 0 350
+region membrane cylinder x 350 350 350 0 1000
 
 # create_atoms 1 random 1000 12345 membrane
 
@@ -49,6 +50,8 @@ bond_coeff 1 1500.0 4.2             # 4.2 Depth Bonds
 bond_coeff 2 1500.0 4.200926406     # 2L Diagonal Trap Side Bonds
 bond_coeff 3 1500.0 4.111780545     # Short base trap bonds -- a2
 bond_coeff 4 1500.0 4.288219455     # Long base trap bonds -- a1
+bond_coeff 5 1500.0 4.695742753     # Near Side Linker Bond
+bond_coeff 6 1500.0 8.370188830     # Far Side Linker Bond
 
 angle_style harmonic
 angle_coeff 1 15000.0 90.0         # Perpendicular angles
@@ -59,35 +62,35 @@ angle_coeff 3 15000.0 88.79670045  # 90 - Alpha (long base)
 
 timestep 0.00001000
 
-shell mkdir ./link_pos/ ./e2e_pos/ ./face_vec_pos/ ./axial_ortho_pos/ ./p4_pos/ ./com_pos/ ./dump/
+shell mkdir ./link_pos/ ./e2e_pos/ ./face_vec_pos/ ./axial_ortho_pos/ ./p4_pos/ ./com_pos/ ./dump/ ./plen/
 
 dump minimization all atom 1 dump/dump.min.${xx}.lammpstrj
 minimize 0.0 1.0e-5 10000 10000
 
 fix 1 all nve/limit 1.0e-4
 
-fix wallchain1 chain1 wall/region membrane lj93 5.0 5.0 5.0
-fix walllinkermem link_mem wall/region membrane lj93 1500.0 2.5 10.0
+fix wallchain1 chain1 wall/region membrane lj93 5.0 2.1 2.357
+fix walllinkermem link_mem wall/region membrane lj93 1500.0 2.1 2.357
 
-# variable x1 equal x[85]
-# variable y1 equal y[85]
-# variable z1 equal z[85]
+variable x1 equal x[85]
+variable y1 equal y[85]
+variable z1 equal z[85]
 
-# variable x2 equal x[86]
-# variable y2 equal y[86]
-# variable z2 equal z[86]
+variable x2 equal x[86]
+variable y2 equal y[86]
+variable z2 equal z[86]
 
-# variable x3 equal x[87]
-# variable y3 equal y[87]
-# variable z3 equal z[87]
+variable x3 equal x[87]
+variable y3 equal y[87]
+variable z3 equal z[87]
 
-# variable x4 equal x[88]
-# variable y4 equal y[88]
-# variable z4 equal z[88]
+variable x4 equal x[88]
+variable y4 equal y[88]
+variable z4 equal z[88]
 
-# variable x5 equal x[89]
-# variable y5 equal y[89]
-# variable z5 equal z[89]
+variable x5 equal x[89]
+variable y5 equal y[89]
+variable z5 equal z[89]
 
 variable e1x_o equal x[3]
 variable e1y_o equal y[3]
@@ -121,12 +124,74 @@ variable e2z_o equal z[83]
 # variable p4y equal y[4]
 # variable p4z equal z[4]
 
-
 compute comall all com
 
 variable comx equal c_comall[1]
 variable comy equal c_comall[2]
 variable comz equal c_comall[3]
+
+# plen variables
+variable plen1x equal x[7]-x[3]
+variable plen1y equal y[7]-y[3]
+variable plen1z equal z[7]-z[3]
+variable plen2x equal x[11]-x[7]
+variable plen2y equal y[11]-y[7]
+variable plen2z equal z[11]-z[7]
+variable plen3x equal x[15]-x[11]
+variable plen3y equal y[15]-y[11]
+variable plen3z equal z[15]-z[11]
+variable plen4x equal x[19]-x[15]
+variable plen4y equal y[19]-y[15]
+variable plen4z equal z[19]-z[15]
+variable plen5x equal x[23]-x[19]
+variable plen5y equal y[23]-y[19]
+variable plen5z equal z[23]-z[19]
+variable plen6x equal x[27]-x[23]
+variable plen6y equal y[27]-y[23]
+variable plen6z equal z[27]-z[23]
+variable plen7x equal x[31]-x[27]
+variable plen7y equal y[31]-y[27]
+variable plen7z equal z[31]-z[27]
+variable plen8x equal x[35]-x[31]
+variable plen8y equal y[35]-y[31]
+variable plen8z equal z[35]-z[31]
+variable plen9x equal x[39]-x[35]
+variable plen9y equal y[39]-y[35]
+variable plen9z equal z[39]-z[35]
+variable plen10x equal x[43]-x[39]
+variable plen10y equal y[43]-y[39]
+variable plen10z equal z[43]-z[39]
+variable plen11x equal x[47]-x[43]
+variable plen11y equal y[47]-y[43]
+variable plen11z equal z[47]-z[43]
+variable plen12x equal x[51]-x[47]
+variable plen12y equal y[51]-y[47]
+variable plen12z equal z[51]-z[47]
+variable plen13x equal x[55]-x[51]
+variable plen13y equal y[55]-y[51]
+variable plen13z equal z[55]-z[51]
+variable plen14x equal x[59]-x[55]
+variable plen14y equal y[59]-y[55]
+variable plen14z equal z[59]-z[55]
+variable plen15x equal x[63]-x[59]
+variable plen15y equal y[63]-y[59]
+variable plen15z equal z[63]-z[59]
+variable plen16x equal x[67]-x[63]
+variable plen16y equal y[67]-y[63]
+variable plen16z equal z[67]-z[63]
+variable plen17x equal x[71]-x[67]
+variable plen17y equal y[71]-y[67]
+variable plen17z equal z[71]-z[67]
+variable plen18x equal x[75]-x[71]
+variable plen18y equal y[75]-y[71]
+variable plen18z equal z[75]-z[71]
+variable plen19x equal x[79]-x[75]
+variable plen19y equal y[79]-y[75]
+variable plen19z equal z[79]-z[75]
+variable plen20x equal x[83]-x[79]
+variable plen20y equal y[83]-y[79]
+variable plen20z equal z[83]-z[79]
+
 
 thermo_style custom step time temp etotal
 thermo 10000
@@ -141,7 +206,7 @@ reset_timestep 0
 variable tsteps equal time
 
 # fix link_pos all print ${recordinterval} "${tsteps} ${x1} ${y1} ${z1} ${x2} ${y2} ${z2}" file link_pos/link_pos.${xx}.txt screen no
-# fix link_pos all print ${recordinterval} "${tsteps} ${x1} ${y1} ${z1} ${x2} ${y2} ${z2} ${x3} ${y3} ${z3} ${x4} ${y4} ${z4} ${x5} ${y5} ${z5} " file link_pos/link_pos.${xx}.txt screen no
+fix link_pos all print ${recordinterval} "${tsteps} ${x1} ${y1} ${z1} ${x2} ${y2} ${z2} ${x3} ${y3} ${z3} ${x4} ${y4} ${z4} ${x5} ${y5} ${z5} " file link_pos/link_pos.${xx}.txt screen no
 
 fix e2e_pos all print ${recordinterval} "${tsteps} ${e1x_o} ${e1y_o} ${e1z_o} ${e1x_i} ${e1y_i} ${e1z_i} ${e2x_o} ${e2y_o} ${e2z_o} ${e2x_i} ${e2y_i} ${e2z_i} " file e2e_pos/e2e_pos.${xx}.txt screen no
 
@@ -151,7 +216,29 @@ fix e2e_pos all print ${recordinterval} "${tsteps} ${e1x_o} ${e1y_o} ${e1z_o} ${
 
 # fix p4_pos all print ${recordinterval} "${p4x} ${p4y} ${p4z}" file p4_pos/p4_pos.${xx}.txt screen no
 
-# fix com_pos all print ${recordinterval} "${tsteps} ${comx} ${comy} ${comz}" file com_pos/com_pos.${xx}.txt screen no
+fix com_pos all print ${recordinterval} "${tsteps} ${comx} ${comy} ${comz}" file com_pos/com_pos.${xx}.txt screen no
+
+# Writing to plen files
+fix plen1 all print ${recordinterval} "${tsteps} ${plen1x} ${plen1y} ${plen1z}" file plen/plen.1.txt screen no
+fix plen2 all print ${recordinterval} "${tsteps} ${plen2x} ${plen2y} ${plen2z}" file plen/plen.2.txt screen no
+fix plen3 all print ${recordinterval} "${tsteps} ${plen3x} ${plen3y} ${plen3z}" file plen/plen.3.txt screen no
+fix plen4 all print ${recordinterval} "${tsteps} ${plen4x} ${plen4y} ${plen4z}" file plen/plen.4.txt screen no
+fix plen5 all print ${recordinterval} "${tsteps} ${plen5x} ${plen5y} ${plen5z}" file plen/plen.5.txt screen no
+fix plen6 all print ${recordinterval} "${tsteps} ${plen6x} ${plen6y} ${plen6z}" file plen/plen.6.txt screen no
+fix plen7 all print ${recordinterval} "${tsteps} ${plen7x} ${plen7y} ${plen7z}" file plen/plen.7.txt screen no
+fix plen8 all print ${recordinterval} "${tsteps} ${plen8x} ${plen8y} ${plen8z}" file plen/plen.8.txt screen no
+fix plen9 all print ${recordinterval} "${tsteps} ${plen9x} ${plen9y} ${plen9z}" file plen/plen.9.txt screen no
+fix plen10 all print ${recordinterval} "${tsteps} ${plen10x} ${plen10y} ${plen10z}" file plen/plen.10.txt screen no
+fix plen11 all print ${recordinterval} "${tsteps} ${plen11x} ${plen11y} ${plen11z}" file plen/plen.11.txt screen no
+fix plen12 all print ${recordinterval} "${tsteps} ${plen12x} ${plen12y} ${plen12z}" file plen/plen.12.txt screen no
+fix plen13 all print ${recordinterval} "${tsteps} ${plen13x} ${plen13y} ${plen13z}" file plen/plen.13.txt screen no
+fix plen14 all print ${recordinterval} "${tsteps} ${plen14x} ${plen14y} ${plen14z}" file plen/plen.14.txt screen no
+fix plen15 all print ${recordinterval} "${tsteps} ${plen15x} ${plen15y} ${plen15z}" file plen/plen.15.txt screen no
+fix plen16 all print ${recordinterval} "${tsteps} ${plen16x} ${plen16y} ${plen16z}" file plen/plen.16.txt screen no
+fix plen17 all print ${recordinterval} "${tsteps} ${plen17x} ${plen17y} ${plen17z}" file plen/plen.17.txt screen no
+fix plen18 all print ${recordinterval} "${tsteps} ${plen18x} ${plen18y} ${plen18z}" file plen/plen.18.txt screen no
+fix plen19 all print ${recordinterval} "${tsteps} ${plen19x} ${plen19y} ${plen19z}" file plen/plen.19.txt screen no
+fix plen20 all print ${recordinterval} "${tsteps} ${plen20x} ${plen20y} ${plen20z}" file plen/plen.20.txt screen no
 
 dump mydump all atom ${pdump} dump/dump.${xx}.lammpstrj
 
