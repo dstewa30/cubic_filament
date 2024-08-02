@@ -140,13 +140,6 @@ mass = [
 num_linker_chain = 1
 num_linkers = 5
 
-# ---Setup linker numbers---
-# n_linkers_membrane = 0
-# for i in range(n_atoms):
-#    if (i % (linker_gap+1) == 0):
-#        n_linkers_membrane += 1
-# n_bonds += n_linkers_membrane
-
 # ---Setup positions---
 positions = []
 

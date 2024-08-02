@@ -4,14 +4,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
-num_simulations = 1
+num_simulations = 1000
 
 def f(x, m, c):
     return m * x + c
 
 dimension = 3 
 
+with open('data/D_trans_list.txt', 'w') as file:
+    pass
+
 for n in range(num_simulations):
+    print(n)
     # print('com_pos/com_pos.{}.txt'.format(n+1))
     t, x, y, z = np.loadtxt(
         'com_pos/com_pos.{}.txt'.format(n+1), unpack=True)
@@ -39,7 +43,7 @@ for n in range(num_simulations):
 
 
     t_max = len(t)
-    sample_window_fraction = 0.02
+    sample_window_fraction = 0.01
     sample_window = int(t_max * sample_window_fraction)
     # print("Total iterations: {}".format(t_max))
     # print("Sample window: {} iterations".format(sample_window))
@@ -70,7 +74,7 @@ for n in range(num_simulations):
 
     fit_params, fit_cov = curve_fit(f, t_shortened, ds_sq_avg_sampled)
     D_com = fit_params[0]/(2*dimension)
-    with open('data/D_trans_list.txt', 'w') as file:
+    with open('data/D_trans_list.txt', 'a') as file:
         file.write('{}\n'.format(D_com))
     # print('Fitted parameters: m = {:.4e}, c = {:.4e}'.format(fit_params[0], fit_params[1]))
     # print('Diffusion coefficient: D = {:.4e}'.format(fit_params[0]/(2*dimension)))
@@ -81,6 +85,7 @@ for n in range(num_simulations):
     # plt.figure(tight_layout=True)
     # plt.plot(t_shortened, ds_sq_avg_sampled, 'k-', label='Data')
     # plt.plot(t_shortened, fitline, 'r--', label='Fit')
+    # plt.show()
     # plt.xlabel(r'$t/\tau$', fontsize=18)
     # plt.ylabel(r'$\langle ds^2 \rangle$', fontsize=18)
     # plt.title(r"$D_{{com}} = {:.4f}$".format(fit_params[0]/(2*dimension)))
