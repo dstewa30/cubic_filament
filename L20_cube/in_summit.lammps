@@ -1,0 +1,146 @@
+### Lammps generates the text files: com_pos,  e2e_pos, link_pos, etc. ###
+
+include in.variables
+
+variable prun equal 16000000
+variable recordinterval equal 1000
+variable pdump equal 1000
+variable temperature equal 310
+
+units lj
+dimension 3
+neighbor 1.5 bin
+neigh_modify every 1 delay 0 check yes
+boundary p p p
+
+atom_style molecular
+
+read_data polymer.data
+
+# region membrane cylinder x 175.0 175.0 175.0 0 1000
+region membrane block 0 1000 0 350 0 350
+
+# create_atoms 1 random 1000 12345 membrane
+
+group chain1 type 1
+group link_mem type 2
+
+pair_style zero 8.0 nocoeff
+pair_coeff * *
+# pair_coeff 1 1 5.0 2.5 2.8
+
+# pair_style zero 15.0 nocoeff
+# pair_style lj/cut 8.0
+# pair_coeff * *
+# pair_coeff 1 1 5.0 2.5 2.80615512077
+# pair_coeff 1 2 5.0 2.5 2.80615512077
+# pair_coeff 2 2 5.0 2.5 2.80615512077
+
+bond_style harmonic
+bond_coeff 1 1500.0 2.5
+# bond_coeff 1 3000.0 2.5
+# bond_coeff 2 1500.0 2.5 
+bond_coeff 3 1500.0 2.5
+bond_coeff 2 1500.0 4.829629132
+
+
+angle_style harmonic
+angle_coeff 1 15000.0 180.0
+# angle_coeff 1 20000.0 180.0
+
+
+timestep 0.00001000
+
+shell mkdir ./link_pos/ ./e2e_pos/ ./face_vec_pos/ ./axial_ortho_pos/ ./p4_pos/ ./com_pos/ ./dump/
+
+dump minimization all atom 1 dump/dump.min.${xx}.lammpstrj
+minimize 0.0 1.0e-5 10000 10000
+
+fix 1 all nve/limit 1.0e-4
+
+fix wallchain1 chain1 wall/region membrane lj93 5.0 5.0 5.0
+fix walllinkermem link_mem wall/region membrane lj93 1500.0 2.5 10.0
+
+variable x1 equal x[85]
+variable y1 equal y[85]
+variable z1 equal z[85]
+
+variable x2 equal x[86]
+variable y2 equal y[86]
+variable z2 equal z[86]
+
+variable x3 equal x[87]
+variable y3 equal y[87]
+variable z3 equal z[87]
+
+variable x4 equal x[88]
+variable y4 equal y[88]
+variable z4 equal z[88]
+
+variable x5 equal x[89]
+variable y5 equal y[89]
+variable z5 equal z[89]
+
+variable e1x equal x[1]
+variable e1y equal y[1]
+variable e1z equal z[1]
+
+variable e2x equal x[81]
+variable e2y equal y[81]
+variable e2z equal z[81]
+
+variable fv1x equal x[1]
+variable fv1y equal y[1]
+variable fv1z equal z[1]
+
+variable fv2x equal x[2]
+variable fv2y equal y[2]
+variable fv2z equal z[2]
+
+variable axor5x equal x[5]
+variable axor5y equal y[5]
+variable axor5z equal z[5]
+
+variable p4x equal x[4]
+variable p4y equal y[4]
+variable p4z equal z[4]
+
+
+compute comall all com
+
+variable comx equal c_comall[1]
+variable comy equal c_comall[2]
+variable comz equal c_comall[3]
+
+thermo_style custom step time temp etotal
+thermo 10000
+
+run 10000
+
+unfix 1
+undump minimization
+
+reset_timestep 0
+
+variable tsteps equal time
+
+# fix link_pos all print ${recordinterval} "${tsteps} ${x1} ${y1} ${z1} ${x2} ${y2} ${z2}" file link_pos/link_pos.${xx}.txt screen no
+fix link_pos all print ${recordinterval} "${tsteps} ${x1} ${y1} ${z1} ${x2} ${y2} ${z2} ${x3} ${y3} ${z3} ${x4} ${y4} ${z4} ${x5} ${y5} ${z5} " file link_pos/link_pos.${xx}.txt screen no
+
+fix e2e_pos all print ${recordinterval} "${tsteps} ${e1x} ${e1y} ${e1z} ${e2x} ${e2y} ${e2z} " file e2e_pos/e2e_pos.${xx}.txt screen no
+
+fix face_vec_pos all print ${recordinterval} "${tsteps} ${fv1x} ${fv1y} ${fv1z} ${fv2x} ${fv2y} ${fv2z}"  file face_vec_pos/face_vec_pos.${xx}.txt screen no
+
+fix axial_ortho_pos all print ${recordinterval} "${tsteps} ${e1x} ${e1y} ${e1z} ${axor5x} ${axor5y} ${axor5z}"  file axial_ortho_pos/axial_ortho_pos.${xx}.txt screen no
+
+fix p4_pos all print ${recordinterval} "${p4x} ${p4y} ${p4z}" file p4_pos/p4_pos.${xx}.txt screen no
+
+fix com_pos all print ${recordinterval} "${tsteps} ${comx} ${comy} ${comz}" file com_pos/com_pos.${xx}.txt screen no
+
+dump mydump all atom ${pdump} dump/dump.${xx}.lammpstrj
+
+fix 2 all brownian ${temperature} ${vseed} gamma_t 1.0
+
+thermo 100000
+
+run ${prun}

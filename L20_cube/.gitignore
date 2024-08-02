@@ -7,7 +7,6 @@
 !in_summit.lammps
 !modules/
 !L20_trapezoid/
-!L20_cube/
 
 log.*
 old.*
